@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.AnchorPane?>
-<!-- fx:controllerで、このパネルで処理を担当するクラスを指定 -->
-<!-- 本来は別途controllerクラスを作るが、簡単のためfxmlをロードするクラスを指定 -->
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-    fx:controller="com.dokodeglobal.nittax.le4music.Ex1"
-    prefWidth="300.0" prefHeight="80.0">
-    
- <children>
-    <Label text="あなたの名前は？" prefWidth="100.0"
-         AnchorPane.topAnchor="12.0"
-         AnchorPane.leftAnchor="8.0" />
-         
-    <!-- 指定している"nameField"は、ソース中@FXMLアノテーションをつけたフィールド名 -->
-    <TextField fx:id="nameField"
-                prefWidth="100.0" 
-             AnchorPane.topAnchor="8.0" 
-             AnchorPane.leftAnchor="120.0" />
-             
-    <!-- 指定している"handleOK"は、ソース中@FXMLアノテーションをつけたメソッド名 -->
-    <Button onAction="#handleOK"
-             text="OK" prefWidth="60.0"
-             AnchorPane.topAnchor="8.0" 
-             AnchorPane.rightAnchor="8.0" />
-    
-    <!-- 結果表示用のラベル -->
-    <Label fx:id="resultField"
-         prefWidth="200.0"
-         AnchorPane.topAnchor="40.0"
-         AnchorPane.leftAnchor="8.0" />
- </children>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.Ex1">
+   <children>
+      <TabPane layoutX="4.0" layoutY="53.0" prefHeight="544.0" prefWidth="794.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Waveform">
+            <content>
+              <AnchorPane fx:id="waveformpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+            <Tab text="Spectrum">
+              <content>
+                <AnchorPane fx:id="spectrumpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+          <Tab text="Spectrogram">
+            <content>
+              <AnchorPane fx:id="spectrogrampane" minHeight="0.0" minWidth="0.0" prefHeight="340.0" prefWidth="354.0" />
+            </content>
+          </Tab>
+          <Tab text="Volumeform">
+            <content>
+              <AnchorPane fx:id="volumeformpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <Button layoutX="21.0" layoutY="23.0" mnemonicParsing="false" onAction="#OnFileOpenButtonPressed" text="Select Audio File" />
+   </children>
 </AnchorPane>
