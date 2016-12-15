@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package com.dokodeglobal.nittax.le4music.myutilsr;
+package com.dokodeglobal.nittax.le4music.myutils;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,8 +72,18 @@ public class Recorder {
 
     public static final Recorder newRecorder(double sampleRate, double frameDuration, Info mixerInfo, File wavFile) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         AudioFormat format = new AudioFormat((float)sampleRate, 16, 1, true, false);
-        TargetDataLine line = AudioSystem.getTargetDataLine(format, mixerInfo);
-        WavWriter writer = wavFile == null?null:WavWriter.newWavWriter(wavFile, format);
+		/*for sbt*/
+		TargetDataLine line = null;
+		
+		ClassLoader audio_class_loader = javax.sound.sampled.AudioSystem.class.getClassLoader();
+		ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(audio_class_loader);
+			line = AudioSystem.getTargetDataLine(format, mixerInfo);
+		} finally{
+			Thread.currentThread().setContextClassLoader(now_context_class_loader);
+		}
+		WavWriter writer = wavFile == null?null:WavWriter.newWavWriter(wavFile, format);
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             public final Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
@@ -197,7 +207,7 @@ public class Recorder {
     public boolean isActive() {
         return this.line.isActive();
     }
-
+	/*
     public static final void main(String[] args) throws IOException, LineUnavailableException, UnsupportedAudioFileException, ParseException {
         Options options = new Options();
         options.addOption("h", "help", false, "display this help and exit");
@@ -210,8 +220,20 @@ public class Recorder {
         if(cmd.hasOption("h")) {
             HelpFormatter mixerInfo1 = new HelpFormatter();
             mixerInfo1.printHelp("Recorder [OPTION]...", options);
-        } else {
-            Info mixerInfo = cmd.hasOption("m")?AudioSystem.getMixerInfo()[Integer.parseInt(cmd.getOptionValue("m"))]:null;
+			} else {*/
+			/*for sbt*/
+            /*Info mixerInfo = null;
+			
+			ClassLoader audio_class_loader = javax.sound.sampled.AudioSystem.class.getClassLoader();
+			ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader();
+			try {
+				Thread.currentThread().setContextClassLoader(audio_class_loader);
+				mixerInfo = cmd.hasOption("m")?AudioSystem.getMixerInfo()[Integer.parseInt(cmd.getOptionValue("m"))]:null;
+			} finally{
+				Thread.currentThread().setContextClassLoader(now_context_class_loader);
+			}
+		
+			
             File outFile = cmd.hasOption("o")?new File(cmd.getOptionValue("o")):null;
             double sampleRate = cmd.hasOption("r")?Double.parseDouble(cmd.getOptionValue("r")):16000.0D;
             double frameDuration = cmd.hasOption("f")?Double.parseDouble(cmd.getOptionValue("f")):0.4D;
@@ -228,7 +250,7 @@ public class Recorder {
             }, 0L, 100L, TimeUnit.MILLISECONDS);
             recorder.start();
         }
-    }
+    }*/
 
     public static final class Default {
         public static final long initialDelay = 0L;

@@ -1,5 +1,6 @@
 package com.dokodeglobal.nittax.le4music;
 import com.dokodeglobal.nittax.le4music.analyzer.*;
+import com.dokodeglobal.nittax.le4music.myutils.*;
 import java.lang.Thread;
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import java.util.ResourceBundle;
 import javafx.fxml.Initializable;
-
+import javax.sound.sampled.Mixer;
+import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 public class GUIController implements Initializable{
     
 	@FXML
@@ -54,17 +59,32 @@ public class GUIController implements Initializable{
 	@FXML
 	private ChoiceBox mixerlist;
 
+	Recorder recorder;
+	
     @Override
-    public void initialize(URL location, ResourceBundle resources) {		
+    public void initialize(URL location, ResourceBundle resources){
+		try{
+			recorder = Recorder.newRecorder();
+		}catch(Exception e){
+		}
 		mixerlist.setItems(FXCollections.observableArrayList());
-        mixerlist.getItems().add("One");
-        mixerlist.getItems().add("Two");
-        mixerlist.getItems().add("Three");
 		mixerlist.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 				@Override public void changed(ObservableValue<? extends String> selected, String oldParam, String newParam) {
 					System.out.println(newParam);
 				}
 			});
+		ClassLoader audio_class_loader = javax.sound.sampled.AudioSystem.class.getClassLoader();
+		ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader();
+		AudioInputStream stream = null;
+		try {
+			Thread.currentThread().setContextClassLoader(audio_class_loader);
+			Mixer.Info[] infoList = AudioSystem.getMixerInfo(); 
+			for(int i = 0; i < infoList.length; i++){
+				mixerlist.getItems().add(infoList[i].getName());
+			}
+		} finally{
+			Thread.currentThread().setContextClassLoader(now_context_class_loader);
+		}
     }
 
 	/*ファイル選択ボタンを呼ばれた時に呼び出される*/
@@ -81,6 +101,26 @@ public class GUIController implements Initializable{
 	}
 	@FXML
 	public void OnRealTimeAnalyzeButtonPressed(ActionEvent event){
+		recorder.start();
+		ClassLoader audio_class_loader = javax.sound.sampled.AudioSystem.class.getClassLoader();
+		ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader();
+		AudioInputStream stream = null;
+		try {
+			Thread.currentThread().setContextClassLoader(audio_class_loader);
+			recorder.start();
+		} finally{
+			Thread.currentThread().setContextClassLoader(now_context_class_loader);
+		}
+		final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+		executor.scheduleWithFixedDelay(
+										() -> {
+											final double[] frame = recorder.latestFrame();
+											final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
+											final double logRms = 20.0 * Math.log10(rms);
+											System.out.printf("RMS %f dB%n", logRms);
+										},
+										0L, 100L, TimeUnit.MILLISECONDS
+										);
 	}
 	/*各タブの要素を初期化*/
 	private void InitializePane(){
