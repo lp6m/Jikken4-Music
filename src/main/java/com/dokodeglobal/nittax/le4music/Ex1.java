@@ -33,7 +33,13 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities; 
-
+import javafx.scene.control.ListView;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ChoiceBox;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import java.util.ResourceBundle;
+import javafx.fxml.FXML; 
 public class Ex1 extends Application{
 	
     @Override
@@ -42,76 +48,12 @@ public class Ex1 extends Application{
         AnchorPane root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
         Scene scene = new Scene(root);      
         stage.setScene(scene);
-        stage.show();	
+        stage.show();
+		
 	}
- 
+	
     public static void main(String... args){
         launch(args);
-    }
-
-	@FXML
-	private Pane waveformpane;
-	@FXML
-	private Pane spectrogrampane;
-	@FXML
-	private Pane volumeformpane;
-	@FXML
-	private Pane spectrumpane;
-
-	/*ファイル選択ボタンを呼ばれた時に呼び出される*/
-	@FXML
-	public void OnFileOpenButtonPressed(ActionEvent event){
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open Resource File");
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Audio Files", "*.wav"));
-		Stage stage = new Stage();
-		File audioFile = fileChooser.showOpenDialog(stage);
-		if (audioFile != null) {
-			showChart(audioFile);
-		}
-	}
-	/*各タブの要素を初期化*/
-	private void InitializePane(){
-		waveformpane.getChildren().clear();
-		volumeformpane.getChildren().clear();
-		spectrumpane.getChildren().clear();
-		spectrogrampane.getChildren().clear();
-	}
-	/*各タブにプロット結果を表示*/
-    private void showChart(File audioFile) {
-		InitializePane();
-		/*sbtではContextClassLoaderというClassLoaderを使用しているが,AudioInputStreamはこれに対応していないため,
-		  一度AudioInputStreamのClassLoaderに書き換えて音声ファイルをロードし,その後ContextClassLoaderに書き戻す*/
-		/*参考:http://stackoverflow.com/questions/31727385/sbt-scala-audiosystem*/
-		try{
-			//URL audio_path = getClass().getResource("aiueo-danzoku.wav");
-			ClassLoader audio_class_loader = javax.sound.sampled.AudioSystem.class.getClassLoader();
-			ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader();
-			AudioInputStream stream = null;
-			try {
-				Thread.currentThread().setContextClassLoader(audio_class_loader);
-				//stream = AudioSystem.getAudioInputStream(audio_path);
-			    stream = AudioSystem.getAudioInputStream(audioFile);
-			} finally{
-				Thread.currentThread().setContextClassLoader(now_context_class_loader);
-			}
-			final double[] waveform = Le4MusicUtils.readWaveformMonaural(stream);
-			final AudioFormat format = stream.getFormat();
-			final double sampleRate = format.getSampleRate();
-			stream.close();
-			
-			SwingNode swingnode = PlotWaveform.createWaveformChart(waveform, sampleRate);
-			waveformpane.getChildren().add(swingnode);
-			SwingNode volumenode = PlotVolumeform.createPlotVolumeform(waveform, sampleRate,Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
-			volumeformpane.getChildren().add(volumenode);
-			SwingNode spectrumnode = PlotSpectrum.createSpectrumchart(waveform, sampleRate);
-			spectrumpane.getChildren().add(spectrumnode);
-			SwingNode spectrogramnode = PlotSpectrogram.createSpectrogramChart(waveform, sampleRate, Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
-			spectrogrampane.getChildren().add(spectrogramnode);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-        
     }
     
 }
