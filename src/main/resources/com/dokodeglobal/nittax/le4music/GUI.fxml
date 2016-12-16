@@ -33,8 +33,8 @@
           </Tab>
         </tabs>
       </TabPane>
-      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnFileOpenButtonPressed" text="Select Audio File" />
-      <Button layoutX="152.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnRealTimeAnalyzeButtonPressed" text="Realtime Analyze" />
+      <Button fx:id="filechoose_button" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnFileOpenButtonPressed" text="Select Audio File" />
+      <Button fx:id="realtime_analyze_button" layoutX="152.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnRealTimeAnalyzeButtonPressed" text="Realtime Analyze" />
       <ChoiceBox fx:id="mixerlist" layoutX="291.0" layoutY="14.0" prefWidth="150.0">
 		<items>
           <FXCollections fx:factory="observableArrayList">

@@ -46,6 +46,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.*;
+import javafx.scene.control.Button;
+
 public class GUIController implements Initializable{
     
 	@FXML
@@ -58,15 +61,25 @@ public class GUIController implements Initializable{
 	private Pane spectrumpane;
 	@FXML
 	private ChoiceBox mixerlist;
-
-	Recorder recorder;
+	@FXML
+	private Button filechoose_button;
+	@FXML
+	private Button realtime_analyze_button;
 	
+	Boolean now_realtime_analyze = false; //現在リアルタイム解析中かどうか
+
+	ScheduledExecutorService executor;
+	Recorder recorder;
+	PlotWaveform WaveformSwingNode;
+	PlotSpectrum SpectrumSwingNode;
+
     @Override
     public void initialize(URL location, ResourceBundle resources){
-		try{
-			recorder = Recorder.newRecorder();
-		}catch(Exception e){
-		}
+		WaveformSwingNode = new PlotWaveform();
+		waveformpane.getChildren().add(WaveformSwingNode);
+		SpectrumSwingNode = new PlotSpectrum();
+		spectrumpane.getChildren().add(SpectrumSwingNode);
+		
 		mixerlist.setItems(FXCollections.observableArrayList());
 		mixerlist.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 				@Override public void changed(ObservableValue<? extends String> selected, String oldParam, String newParam) {
@@ -82,10 +95,11 @@ public class GUIController implements Initializable{
 			for(int i = 0; i < infoList.length; i++){
 				mixerlist.getItems().add(infoList[i].getName());
 			}
+			mixerlist.getSelectionModel().selectFirst();
 		} finally{
 			Thread.currentThread().setContextClassLoader(now_context_class_loader);
 		}
-    }
+	}
 
 	/*ファイル選択ボタンを呼ばれた時に呼び出される*/
 	@FXML
@@ -101,26 +115,67 @@ public class GUIController implements Initializable{
 	}
 	@FXML
 	public void OnRealTimeAnalyzeButtonPressed(ActionEvent event){
-		recorder.start();
+	    if(now_realtime_analyze == false){
+			/*現在選択中のMixerを使用して録音を開始する*/
+			ClassLoader audio_class_loader = javax.sound.sampled.AudioSystem.class.getClassLoader();
+			ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader();
+			AudioInputStream stream = null;
+			try {
+				Thread.currentThread().setContextClassLoader(audio_class_loader);
+				recorder = Recorder.newRecorder(16000.0D, 0.4D, getNowSelectMixer() ,null);
+				recorder.start();
+				now_realtime_analyze = true;
+				executor = Executors.newSingleThreadScheduledExecutor();
+				executor.scheduleWithFixedDelay(
+												() -> {
+													final double[] frame = recorder.latestFrame();
+													final double sampleRate = recorder.getSampleRate();
+													final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
+													final double logRms = 20.0 * Math.log10(rms);
+													System.out.printf("RMS %f dB%n", logRms);
+													UpdateChartData(frame, sampleRate);
+												},
+												0L, 100L, TimeUnit.MILLISECONDS
+												);
+				realtime_analyze_button.setText("Stop");
+				filechoose_button.setDisable(true);
+				mixerlist.setDisable(true);
+			}catch(Exception e){
+				System.out.println("Recorderの取得に失敗しました");
+			}finally{
+				Thread.currentThread().setContextClassLoader(now_context_class_loader);
+			}
+			
+		}else{
+			//録音を停止する
+			recorder.stop();
+			now_realtime_analyze = false;
+			executor.shutdown();
+			executor = null;
+			realtime_analyze_button.setText("Realtime Analyze");
+			filechoose_button.setDisable(false);
+			mixerlist.setDisable(false);
+		}
+	}
+	public void UpdateChartData(double[] frame, double sampleRate){
+		WaveformSwingNode.UpdateDataSource(frame, sampleRate);
+		SpectrumSwingNode.UpdateDataSource(frame, sampleRate);
+		
+		
+	}
+	public Mixer.Info getNowSelectMixer(){
+		Mixer.Info rst = null;
 		ClassLoader audio_class_loader = javax.sound.sampled.AudioSystem.class.getClassLoader();
 		ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader();
 		AudioInputStream stream = null;
 		try {
 			Thread.currentThread().setContextClassLoader(audio_class_loader);
-			recorder.start();
+			Mixer.Info[] infoList = AudioSystem.getMixerInfo();
+			rst = infoList[(int)mixerlist.getSelectionModel().getSelectedIndex()];
 		} finally{
 			Thread.currentThread().setContextClassLoader(now_context_class_loader);
 		}
-		final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-		executor.scheduleWithFixedDelay(
-										() -> {
-											final double[] frame = recorder.latestFrame();
-											final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
-											final double logRms = 20.0 * Math.log10(rms);
-											System.out.printf("RMS %f dB%n", logRms);
-										},
-										0L, 100L, TimeUnit.MILLISECONDS
-										);
+		return rst;
 	}
 	/*各タブの要素を初期化*/
 	private void InitializePane(){
@@ -134,6 +189,7 @@ public class GUIController implements Initializable{
 	/*各タブにプロット結果を表示*/
     private void showChart(File audioFile) {
 		InitializePane();
+
 		/*sbtではContextClassLoaderというClassLoaderを使用しているが,AudioInputStreamはこれに対応していないため,
 		  一度AudioInputStreamのClassLoaderに書き換えて音声ファイルをロードし,その後ContextClassLoaderに書き戻す*/
 		/*参考:http://stackoverflow.com/questions/31727385/sbt-scala-audiosystem*/
@@ -153,7 +209,7 @@ public class GUIController implements Initializable{
 			final AudioFormat format = stream.getFormat();
 			final double sampleRate = format.getSampleRate();
 			stream.close();
-			
+			/*
 			SwingNode swingnode = PlotWaveform.createWaveformChart(waveform, sampleRate);
 			waveformpane.getChildren().add(swingnode);
 			SwingNode volumenode = PlotVolumeform.createPlotVolumeform(waveform, sampleRate,Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
@@ -162,6 +218,7 @@ public class GUIController implements Initializable{
 			spectrumpane.getChildren().add(spectrumnode);
 			SwingNode spectrogramnode = PlotSpectrogram.createSpectrogramChart(waveform, sampleRate, Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
 			spectrogrampane.getChildren().add(spectrogramnode);
+			*/
 		}catch(Exception e){
 			e.printStackTrace();
 		}
