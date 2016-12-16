@@ -70,15 +70,15 @@ public class GUIController implements Initializable{
 
 	ScheduledExecutorService executor;
 	Recorder recorder;
-	PlotWaveform WaveformSwingNode;
-	PlotSpectrum SpectrumSwingNode;
+	WaveformChartNode waveformChartNode;
+	SpectrumChartNode spectrumChartNode;
 
     @Override
     public void initialize(URL location, ResourceBundle resources){
-		WaveformSwingNode = new PlotWaveform();
-		waveformpane.getChildren().add(WaveformSwingNode);
-		SpectrumSwingNode = new PlotSpectrum();
-		spectrumpane.getChildren().add(SpectrumSwingNode);
+		waveformChartNode = new WaveformChartNode();
+		waveformpane.getChildren().add(waveformChartNode);
+		spectrumChartNode = new SpectrumChartNode();
+		spectrumpane.getChildren().add(spectrumChartNode);
 		
 		mixerlist.setItems(FXCollections.observableArrayList());
 		mixerlist.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -158,8 +158,8 @@ public class GUIController implements Initializable{
 		}
 	}
 	public void UpdateChartData(double[] frame, double sampleRate){
-		WaveformSwingNode.UpdateDataSource(frame, sampleRate);
-		SpectrumSwingNode.UpdateDataSource(frame, sampleRate);
+		waveformChartNode.UpdateDataSource(frame, sampleRate);
+		spectrumChartNode.UpdateDataSource(frame, sampleRate);
 	}
 	public Mixer.Info getNowSelectMixer(){
 		Mixer.Info rst = null;
@@ -204,8 +204,8 @@ public class GUIController implements Initializable{
 			final double sampleRate = format.getSampleRate();
 			stream.close();
 			
-			WaveformSwingNode.UpdateDataSource(waveform, sampleRate);
-			SpectrumSwingNode.UpdateDataSource(waveform, sampleRate);
+			waveformChartNode.UpdateDataSource(waveform, sampleRate);
+			spectrumChartNode.UpdateDataSource(waveform, sampleRate);
 			SwingNode volumenode = PlotVolumeform.createPlotVolumeform(waveform, sampleRate,Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
 			volumeformpane.getChildren().add(volumenode);
 			SwingNode spectrogramnode = PlotSpectrogram.createSpectrogramChart(waveform, sampleRate, Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
