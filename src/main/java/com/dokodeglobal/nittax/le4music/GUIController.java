@@ -160,8 +160,6 @@ public class GUIController implements Initializable{
 	public void UpdateChartData(double[] frame, double sampleRate){
 		WaveformSwingNode.UpdateDataSource(frame, sampleRate);
 		SpectrumSwingNode.UpdateDataSource(frame, sampleRate);
-		
-		
 	}
 	public Mixer.Info getNowSelectMixer(){
 		Mixer.Info rst = null;
@@ -177,14 +175,10 @@ public class GUIController implements Initializable{
 		}
 		return rst;
 	}
-	/*各タブの要素を初期化*/
+	/*時間変化するPaneの要素を初期化*/
 	private void InitializePane(){
-		waveformpane.getChildren().clear();
 		volumeformpane.getChildren().clear();
-		spectrumpane.getChildren().clear();
 		spectrogrampane.getChildren().clear();
-		mixerlist.getItems().addAll("item1", "item2", "item3");
-		
 	}
 	/*各タブにプロット結果を表示*/
     private void showChart(File audioFile) {
@@ -209,16 +203,14 @@ public class GUIController implements Initializable{
 			final AudioFormat format = stream.getFormat();
 			final double sampleRate = format.getSampleRate();
 			stream.close();
-			/*
-			SwingNode swingnode = PlotWaveform.createWaveformChart(waveform, sampleRate);
-			waveformpane.getChildren().add(swingnode);
+			
+			WaveformSwingNode.UpdateDataSource(waveform, sampleRate);
+			SpectrumSwingNode.UpdateDataSource(waveform, sampleRate);
 			SwingNode volumenode = PlotVolumeform.createPlotVolumeform(waveform, sampleRate,Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
 			volumeformpane.getChildren().add(volumenode);
-			SwingNode spectrumnode = PlotSpectrum.createSpectrumchart(waveform, sampleRate);
-			spectrumpane.getChildren().add(spectrumnode);
 			SwingNode spectrogramnode = PlotSpectrogram.createSpectrogramChart(waveform, sampleRate, Le4MusicUtils.frameDuration, Le4MusicUtils.shiftDuration);
 			spectrogrampane.getChildren().add(spectrogramnode);
-			*/
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
