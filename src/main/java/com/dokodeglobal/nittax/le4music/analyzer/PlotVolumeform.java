@@ -16,7 +16,7 @@ import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.MathArrays;
 import javafx.embed.swing.SwingNode;
 
-public class PlotVolumeform {   
+public class PlotVolumeform{   
     @SuppressWarnings("unchecked")
 		/* 波 形 を 短 時 間 フ ー リ エ 変 換 し ， ス ペ ク ト ロ グ ラ ム を プ ロ ッ ト す る */
 	public static final SwingNode createPlotVolumeform(final double[] waveform,final double sampleRate,final double windowDuration,final double windowShift) {

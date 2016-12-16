@@ -12,23 +12,54 @@ import javafx.embed.swing.SwingNode;
 import javax.swing.SwingUtilities;
 import org.jfree.chart.ChartPanel;
 
-public class PlotWaveform {   
-    @SuppressWarnings("unchecked")
-	static public SwingNode createWaveformChart(final double[] waveform, final double sampleRate){
+public class PlotWaveform extends SwingNode{
+	
+	public PlotWaveform(){
+		JFreeChart chart =  ChartFactory.createXYLineChart(null,null,null,null);
+		ChartPanel cp = new ChartPanel(chart);
+        this.setContent(cp);
+		setGraphLabel();
+	}
+  
+	public PlotWaveform(final double[] waveform, final double sampleRate){
 		/*各サンプルの時刻を求める*/	
 		final double[] times = IntStream.range(0, waveform.length).mapToDouble(i -> i / sampleRate).toArray();
 		JFreeChart chart =  ChartFactory.createXYLineChart(null,null,null,new SingleXYArrayDataset(times,waveform));
 		ChartPanel cp = new ChartPanel(chart);
-		SwingNode sNode = new SwingNode();
-        sNode.setContent(cp);
-		chart.setTitle("Waveform");
+        this.setContent(cp);
 		final XYPlot plot = chart.getXYPlot();
 		final NumberAxis xAxis = (NumberAxis)plot.getDomainAxis();
 		xAxis.setRange(0.0, (waveform.length - 1) / sampleRate);
-		xAxis.setLabel("Time [sec.]");
 		final NumberAxis yAxis = (NumberAxis)plot.getRangeAxis();
 		yAxis.setRange(-1.0, 1.0);
-		yAxis.setLabel("Amplitude");
-		return sNode;
+		setGraphLabel();
+		UpdateDataSource(waveform, sampleRate);
 	}
+
+	public void setGraphLabel(){
+		ChartPanel cp = (ChartPanel)this.getContent();
+		JFreeChart chart = (JFreeChart)cp.getChart();
+		chart.setTitle("Waveform");
+		final XYPlot plot = chart.getXYPlot();
+		final NumberAxis xAxis = (NumberAxis)plot.getDomainAxis();
+		xAxis.setLabel("Time [sec.]");
+		final NumberAxis yAxis = (NumberAxis)plot.getRangeAxis();
+		yAxis.setLabel("Amplitude");
+	}
+
+	public void UpdateDataSource(final double[] waveform, final double sampleRate){
+		try{
+			ChartPanel cp = (ChartPanel)this.getContent();
+			JFreeChart chart = (JFreeChart)cp.getChart();
+			XYPlot plot = (XYPlot) chart.getPlot();
+			final double[] times = IntStream.range(0, waveform.length).mapToDouble(i -> i / sampleRate).toArray();
+			plot.setDataset(new SingleXYArrayDataset(times,waveform));
+			/*縦軸は固定*/
+			final NumberAxis yAxis = (NumberAxis)plot.getRangeAxis();
+			yAxis.setRange(-1.0, 1.0);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 }
