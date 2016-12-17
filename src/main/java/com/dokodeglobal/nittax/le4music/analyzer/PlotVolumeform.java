@@ -17,8 +17,7 @@ import org.apache.commons.math3.util.MathArrays;
 import javafx.embed.swing.SwingNode;
 
 public class PlotVolumeform{   
-    @SuppressWarnings("unchecked")
-		/* 波 形 を 短 時 間 フ ー リ エ 変 換 し ， ス ペ ク ト ロ グ ラ ム を プ ロ ッ ト す る */
+	/*波形を短時間フーリエ変換し,各フレームごとに音量を求め,グラフのノードを返す*/
 	public static final SwingNode createPlotVolumeform(final double[] waveform,final double sampleRate,final double windowDuration,final double windowShift) {
 		/* 窓 関 数 と F F T の サ ン プ ル 数 */
 		final int windowSize = (int)Math.round(windowDuration * sampleRate);
@@ -32,14 +31,18 @@ public class PlotVolumeform{
 		/* 短 時 間 フ ー リ エ 変 換 本 体 */
 		final Stream<Complex[]> spectrogram = Le4MusicUtils.sliding(waveform, window, shiftSize).map(frame -> Le4MusicUtils.rfft(frame));
 		final Complex[][] array = (Complex[][])spectrogram.toArray(Complex[][]::new);
-		final double[] result = new double[array.length];
+	    /*短時間フーリエ変換を行った結果に基づいて音量を計算*/
+		/*streamを使った書き方に慣れていないため,for文を回してかくことにした*/
+		double[] result = new double[array.length];
+		/*フレームごとにdBを求める*/
 		for(int i = 0; i < array.length; i++){
-			double sum = 0;
+			double rms = 0;
 			int N = array[i].length;
 			for(int j = 0; j < N; j++){
-				sum += Math.pow(array[i][j].abs(),2.0);
+				rms += Math.pow(array[i][j].abs(),2.0);
 			}
-			result[i] = 20.0*Math.log10(Math.sqrt(sum/(double)N));
+			//RMSからdBに変換
+			result[i] = 20.0*Math.log10(Math.sqrt(rms/(double)N));
 		}
 		/* フ レ ー ム 数 と 各 フ レ ー ム 先 頭 位 置 の 時 刻 */
 		final double[] times = IntStream.range(0, array.length).mapToDouble(i -> i * windowShift).toArray();
