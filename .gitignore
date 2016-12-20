@@ -1,5 +1,10 @@
-/target
-/project/target
-/project/project/target
+ex1/target
+ex1/project/target
+ex1/project/project/target
 *.wav
-/lib/le4music.jar
+ex1/lib/le4music.jar
+
+ex2/target
+ex2/project/target
+ex2/project/project/target
+ex2/lib/le4music.jar
