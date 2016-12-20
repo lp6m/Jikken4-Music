@@ -48,7 +48,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.*;
 import javafx.scene.control.Button;
-
+import javafx.scene.control.Label;
+import javax.sound.sampled.*;
 public class GUIController implements Initializable{
     
 	@FXML
@@ -60,25 +61,31 @@ public class GUIController implements Initializable{
 	@FXML
 	private Pane spectrumpane;
 	@FXML
+	private Pane subharmonicsummationpane;
+	@FXML
 	private ChoiceBox mixerlist;
 	@FXML
 	private Button filechoose_button;
 	@FXML
 	private Button realtime_analyze_button;
+	@FXML
+	private Label volumelabel;
 	
 	Boolean now_realtime_analyze = false; //現在リアルタイム解析中かどうか
-
+	private Clip activeClip;
 	ScheduledExecutorService executor;
 	Recorder recorder;
 	WaveformChartNode waveformChartNode;
 	SpectrumChartNode spectrumChartNode;
-
+	SubharmonicSummationChartNode subharmonicsummationChartNode;
     @Override
     public void initialize(URL location, ResourceBundle resources){
 		waveformChartNode = new WaveformChartNode();
 		waveformpane.getChildren().add(waveformChartNode);
 		spectrumChartNode = new SpectrumChartNode();
 		spectrumpane.getChildren().add(spectrumChartNode);
+		subharmonicsummationChartNode = new SubharmonicSummationChartNode();
+		subharmonicsummationpane.getChildren().add(subharmonicsummationChartNode);
 		
 		mixerlist.setItems(FXCollections.observableArrayList());
 		mixerlist.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -132,7 +139,7 @@ public class GUIController implements Initializable{
 													final double sampleRate = recorder.getSampleRate();
 													final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
 													final double logRms = 20.0 * Math.log10(rms);
-													System.out.printf("RMS %f dB%n", logRms);
+													//System.out.printf("RMS %f dB%n", logRms);
 													UpdateChartData(frame, sampleRate);
 												},
 												0L, 100L, TimeUnit.MILLISECONDS
@@ -158,8 +165,17 @@ public class GUIController implements Initializable{
 		}
 	}
 	public void UpdateChartData(double[] frame, double sampleRate){
+		double time = frame.length / sampleRate;
+		for(int i = 0; i < frame.length; i++){
+			//frame[i] = 1.0 * Math.sin(2 * Math.PI * time * i / 10);
+		}
 		waveformChartNode.UpdateDataSource(frame, sampleRate);
 		spectrumChartNode.UpdateDataSource(frame, sampleRate);
+		List<Double> rst = subharmonicsummationChartNode.UpdateDataSourceAndEstimateFreq(frame, sampleRate, volumelabel);
+		System.out.println(Double.toString(rst.get(0))+"Hz : " + Double.toString(rst.get(1)));
+		double threshold = 0.0005;
+		if(rst.get(1) > threshold) playSinWave(rst.get(0), 50);
+		//		volumelabel.setText(Double.toString(freq) + "Hz");
 	}
 	public Mixer.Info getNowSelectMixer(){
 		Mixer.Info rst = null;
@@ -174,6 +190,34 @@ public class GUIController implements Initializable{
 			Thread.currentThread().setContextClassLoader(now_context_class_loader);
 		}
 		return rst;
+	}
+	private void playSinWave(double freq, double miliseconds){
+		try {
+			if(activeClip != null) activeClip.close();
+			double num = 44100 * miliseconds / 1000;
+			System.out.println(num);
+			byte[] data=new byte[(int)num];
+			//sin波の作成：
+			double a = a=2*Math.PI/(44100.0/freq);
+			for(int i=0;i<data.length;i++){
+				data[i]=(byte)(120*Math.sin(i*a));
+			}
+			AudioFormat frmt = new AudioFormat(44100,8,1,true,false);
+			//1秒あたりのサンプル数は44100個、
+			//音のビット数は8bit=256、
+			//チャネル数は1、
+			//値は正負型、
+			//bigEndianはfalse=リトルエンディアン
+			DataLine.Info info=new DataLine.Info(Clip.class,frmt);
+			Clip clip=(Clip)AudioSystem.getLine(info);
+			clip.open(frmt,data,0,data.length);
+
+			//再生を開始する
+			clip.start();
+			activeClip = clip;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	/*時間変化するPaneの要素を初期化*/
 	private void InitializePane(){

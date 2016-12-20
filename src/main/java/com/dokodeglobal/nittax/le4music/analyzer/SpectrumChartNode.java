@@ -1,5 +1,6 @@
 package com.dokodeglobal.nittax.le4music.analyzer;
 
+import com.dokodeglobal.nittax.le4music.myutils.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -57,20 +58,20 @@ public final class SpectrumChartNode extends SwingNode{
 		/* fftSize = 2ˆp >= waveform.length を 満 た す fftSize を 求 め る
 		* 2ˆp は シ フ ト 演 算 で 求 め ら れ る */
 		final int fftSize = 1 << Le4MusicUtils.nextPow2(waveform.length);
-		System.out.println(waveform.length);
-		System.out.println(fftSize);
 		/* 信 号 の 長 さ を fftSize に 伸 ば し ， 長 さ が 足 り な い 部 分 は0 で 埋 め る ．
 		* 振 幅 を 信 号 長 で 正 規 化 す る ． */
 		final double[] src = Arrays.stream(Arrays.copyOf(waveform, fftSize)).map(w -> w / waveform.length).toArray();
 		/* 高 速 フ ー リ エ 変 換 を 行 う */
 		final Complex[] spectrum = Le4MusicUtils.rfft(src);
 		/* 対 数 振 幅 ス ペ ク ト ル を 求 め る */
-		final double[] specLog = Arrays.stream(spectrum).mapToDouble(c -> 20.0 * Math.log10(c.abs())).toArray();
+		//		double[] specLog = Arrays.stream(spectrum).mapToDouble(c -> 20.0 * Math.log10(c.abs())).toArray();
+		double[] specLog = Arrays.stream(spectrum).mapToDouble(c -> c.abs()).toArray();
 		/* 周 波 数 を 求 め る ． 以 下 を 満 た す よ う に 線 型 に
 		* freqs[0] = 0Hz
 		* freqs[fftSize2 - 1] = sampleRate / 2 (= Nyquist周波数) */
-		final double[] freqs = IntStream.rangeClosed(0, fftSize >> 1).mapToDouble(i -> i * sampleRate / fftSize).toArray();
-
+		
+		double[] freqs = IntStream.rangeClosed(0, fftSize >> 1).mapToDouble(i -> i * sampleRate / fftSize).toArray();
+		
 		return new SingleXYArrayDataset(freqs, specLog);
 	}
 	
@@ -81,6 +82,8 @@ public final class SpectrumChartNode extends SwingNode{
 			XYPlot plot = (XYPlot) chart.getPlot();
 			final NumberAxis xAxis = (NumberAxis)plot.getDomainAxis();
 			xAxis.setRange(0.0, 0.5 * sampleRate);
+			final NumberAxis yAxis = (NumberAxis)plot.getRangeAxis();
+			//			yAxis.setRange(-160.0,0);
 			final double[] times = IntStream.range(0, waveform.length).mapToDouble(i -> i / sampleRate).toArray();
 			plot.setDataset(createSpectrumData(waveform,sampleRate));
 		}catch(Exception e){
