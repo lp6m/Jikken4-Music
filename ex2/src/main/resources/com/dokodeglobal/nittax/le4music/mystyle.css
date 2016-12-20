@@ -1,0 +1,19 @@
+.circle-button {
+    -fx-pref-width: 4.0em;
+    -fx-pref-height: 4.0em;
+    -fx-background-radius: 2.0em;
+    -fx-background-color: null;
+    -fx-border-radius: 2.0em;
+    -fx-border-color: black;
+    -fx-border-width: 2.0px;
+}
+.circle-button:disabled {
+	-fx-border-color: rgb(0, 0, 0, 0.7);
+}
+.circle-button:hover {
+	-fx-background-color: #dcdcdc;
+}
+.circle-button:pressed {
+	-fx-background-color: black;
+	-fx-border-color: white;
+}

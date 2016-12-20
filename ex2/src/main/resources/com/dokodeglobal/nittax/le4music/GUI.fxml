@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.GUIController">
+   <children>
+      <Button fx:id="wavfilechoose_button1" layoutX="22.0" layoutY="7.0" mnemonicParsing="false" onAction="#OnAudioFileOpenButtonPressed" text="Select Audio File" />
+      <Button fx:id="midifilechoose_button" layoutX="22.0" layoutY="39.0" mnemonicParsing="false" onAction="#OnMidiFileOpenButtonPressed" text="Select MIDI File" />
+      <ChoiceBox fx:id="mixerlist" layoutX="636.0" layoutY="7.0" prefWidth="150.0">
+		<items>
+          <FXCollections fx:factory="observableArrayList">
+		  </FXCollections>
+		  </items>
+	  </ChoiceBox>
+      <Button layoutX="303.0" layoutY="13.0" mnemonicParsing="false" prefHeight="256.0" prefWidth="224.0" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
+      <Button layoutX="367.0" layoutY="13.0" mnemonicParsing="false" prefHeight="256.0" prefWidth="224.0" styleClass="circle-button" stylesheets="@mystyle.css" text="Stop" />
+      <Button layoutX="430.0" layoutY="13.0" mnemonicParsing="false" prefHeight="256.0" prefWidth="85.0" styleClass="circle-button" stylesheets="@mystyle.css" text="Reset" />
+      <Label layoutX="581.0" layoutY="12.0" text="Mixer" />
+      <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="523.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <items>
+          <AnchorPane fx:id="midiPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+            <SplitPane dividerPositions="0.5776942355889725" prefHeight="160.0" prefWidth="200.0">
+              <items>
+                <AnchorPane fx:id="spectrumPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+              </items>
+            </SplitPane>
+        </items>
+      </SplitPane>
+      <Label fx:id="audioLabel" layoutX="149.0" layoutY="12.0" />
+      <Label fx:id="midiLabel" layoutX="149.0" layoutY="44.0" />
+   </children>
+</AnchorPane>

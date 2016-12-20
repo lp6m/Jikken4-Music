@@ -173,7 +173,7 @@ public class GUIController implements Initializable{
 		spectrumChartNode.UpdateDataSource(frame, sampleRate);
 		List<Double> rst = subharmonicsummationChartNode.UpdateDataSourceAndEstimateFreq(frame, sampleRate, volumelabel);
 		System.out.println(Double.toString(rst.get(0))+"Hz : " + Double.toString(rst.get(1)));
-		double threshold = 0.0005;
+		double threshold = 0.001;
 		if(rst.get(1) > threshold) playSinWave(rst.get(0), 50);
 		//		volumelabel.setText(Double.toString(freq) + "Hz");
 	}
