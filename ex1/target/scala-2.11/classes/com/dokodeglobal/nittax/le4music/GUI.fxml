@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.GUIController">
+   <children>
+      <TabPane layoutX="4.0" layoutY="53.0" prefHeight="544.0" prefWidth="794.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Waveform">
+            <content>
+              <AnchorPane fx:id="waveformpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+            <Tab text="Spectrum">
+              <content>
+                <AnchorPane fx:id="spectrumpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+          <Tab text="Spectrogram">
+            <content>
+              <AnchorPane fx:id="spectrogrampane" minHeight="0.0" minWidth="0.0" prefHeight="340.0" prefWidth="354.0" />
+            </content>
+          </Tab>
+          <Tab text="Volumeform">
+            <content>
+              <AnchorPane fx:id="volumeformpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+		  <Tab text="SubharmonicSummation">
+            <content>
+              <AnchorPane fx:id="subharmonicsummationpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <Button fx:id="filechoose_button" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnFileOpenButtonPressed" text="Select Audio File" />
+      <Button fx:id="realtime_analyze_button" layoutX="152.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnRealTimeAnalyzeButtonPressed" text="Realtime Analyze" />
+      <ChoiceBox fx:id="mixerlist" layoutX="291.0" layoutY="14.0" prefWidth="150.0">
+		<items>
+          <FXCollections fx:factory="observableArrayList">
+		  </FXCollections>
+		  </items>
+	  </ChoiceBox>
+      <Label fx:id="volumelabel" layoutX="483.0" layoutY="19.0" text="Label" />
+   </children>
+</AnchorPane>
