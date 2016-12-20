@@ -1,8 +1,0 @@
-[0m[[0mdebug[0m] [0mCopy resource mappings: [0m
-[0m[[0mdebug[0m] [0m	(/home/lp6m/le4music/ex1/src/main/resources/com,/home/lp6m/le4music/ex1/target/scala-2.11/classes/com)[0m
-[0m[[0mdebug[0m] [0m	(/home/lp6m/le4music/ex1/src/main/resources/com/dokodeglobal,/home/lp6m/le4music/ex1/target/scala-2.11/classes/com/dokodeglobal)[0m
-[0m[[0mdebug[0m] [0m	(/home/lp6m/le4music/ex1/src/main/resources/com/dokodeglobal/nittax,/home/lp6m/le4music/ex1/target/scala-2.11/classes/com/dokodeglobal/nittax)[0m
-[0m[[0mdebug[0m] [0m	(/home/lp6m/le4music/ex1/src/main/resources/com/dokodeglobal/nittax/le4music,/home/lp6m/le4music/ex1/target/scala-2.11/classes/com/dokodeglobal/nittax/le4music)[0m
-[0m[[0mdebug[0m] [0m	(/home/lp6m/le4music/ex1/src/main/resources/com/dokodeglobal/nittax/le4music/GUI.fxml,/home/lp6m/le4music/ex1/target/scala-2.11/classes/com/dokodeglobal/nittax/le4music/GUI.fxml)[0m
-[0m[[0mdebug[0m] [0m	(/home/lp6m/le4music/ex1/src/main/resources/com/dokodeglobal/nittax/le4music/aiueo-danzoku.wav,/home/lp6m/le4music/ex1/target/scala-2.11/classes/com/dokodeglobal/nittax/le4music/aiueo-danzoku.wav)[0m
-[0m[[0mdebug[0m] [0m	(/home/lp6m/le4music/ex1/src/main/resources/com/dokodeglobal/nittax/le4music/aiueo-renzoku.wav,/home/lp6m/le4music/ex1/target/scala-2.11/classes/com/dokodeglobal/nittax/le4music/aiueo-renzoku.wav)[0m
