@@ -40,7 +40,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import java.util.ResourceBundle;
-import javafx.fxml.FXML; 
+import javafx.fxml.FXML;
 public class Ex2 extends Application{
 	
     @Override
@@ -54,7 +54,7 @@ public class Ex2 extends Application{
 	}
 	
     public static void main(String... args){
-        launch(args);
+	    launch(args);
     }
     
 }

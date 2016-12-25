@@ -17,7 +17,7 @@
 		  </FXCollections>
 		  </items>
 	  </ChoiceBox>
-      <Button fx:id="startbutton" layoutX="56.0" layoutY="39.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
+      <Button fx:id="startbutton" layoutX="56.0" layoutY="39.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" onAction="#OnStartButtonPressed"/>
       <Button fx:id="stopbutton" layoutX="117.0" layoutY="39.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Stop" />
       <Button fx:id="resetbutton" layoutX="176.0" layoutY="40.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Res" />
       <SplitPane dividerPositions="0.5" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
@@ -31,5 +31,6 @@
             </SplitPane>
         </items>
       </SplitPane>
+      <Slider fx:id="musicSlider" layoutX="264.0" layoutY="50.0" prefHeight="16.0" prefWidth="335.0" />
    </children>
 </AnchorPane>
