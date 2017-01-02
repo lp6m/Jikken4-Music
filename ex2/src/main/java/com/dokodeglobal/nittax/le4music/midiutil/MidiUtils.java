@@ -11,7 +11,7 @@ public class MidiUtils{
 	
 	public MidiUtils(File f, int track) throws IOException, InvalidMidiDataException{
 		Sequence s = MidiSystem.getSequence(f);
-		System.out.println(s.getMi
+	    
 		this.t = s.getTracks()[track];
 	}
 	public void showMidiEvent(){
