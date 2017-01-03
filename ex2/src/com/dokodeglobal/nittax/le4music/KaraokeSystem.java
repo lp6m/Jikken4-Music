@@ -16,10 +16,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javafx.scene.shape.*;
+import jp.ac.kyoto_u.kuis.le4music.Player;
 
 public class KaraokeSystem{
 	static public Boolean nowplaying = false;
-	static private File audioFile, midiFile;
+	static private File audioFile,midiFile;
+	static private Player musicplayer;           /*BGM*/
 	static public List<NoteData> notelist;      /*MidiCSVからよみこんだNoteDataのリスト*/
 	static public List<NoteBox> noteboxlist;    /*表示するノーツのBoxリスト*/
     static public AnchorPane notepane;          /*ノーツを表示するPane*/
@@ -115,11 +117,19 @@ public class KaraokeSystem{
 										},
 										0L, 1L, TimeUnit.MILLISECONDS
 										);*/
+
+        try {
+            musicplayer = Player.newPlayer(audioFile);
+            musicplayer.start();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 		notecounter = 0;
 		zurashi = 0;
 		karaokethread = new KaraokeThread();
 		karaokethread.start();
 		KaraokeSystem.nowplaying = true;
+
 	}
 	static public void stop(){
 		if(KaraokeSystem.nowplaying != true) return;

@@ -11,15 +11,11 @@ public class KaraokeThread extends Thread{
 	private Receiver receiver;
 
 	public KaraokeThread(){
-		try {
-			ClassLoader midi_class_loader = javax.sound.midi.MidiSystem.class.getClassLoader();
-			ClassLoader now_context_class_loader = Thread.currentThread().getContextClassLoader(); 
-			Thread.currentThread().setContextClassLoader(midi_class_loader);
-			receiver = MidiSystem.getReceiver();
-			Thread.currentThread().setContextClassLoader(now_context_class_loader);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+	    try {
+            receiver = MidiSystem.getReceiver();
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
 	}
 			
 	public void stopThread(){
