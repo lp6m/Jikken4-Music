@@ -3,7 +3,8 @@ package com.dokodeglobal.nittax.le4music;
 import java.lang.Thread;
 import javax.sound.sampled.*;
 import javax.sound.midi.*;
-
+import com.dokodeglobal.nittax.le4music.myutils.NoteNameUtil;
+import com.dokodeglobal.nittax.le4music.viewcomponent.NoteBox;
 public class KaraokeThread extends Thread{
 	private Boolean isActive = true; /*スレッドがアクティブの時だけtrue*/
 
@@ -44,14 +45,17 @@ public class KaraokeThread extends Thread{
 	public void run(){
 		long starttime = System.nanoTime();
 		long oldontime = starttime;
-		int offcounter = 0;
+		//int offcounter = 0;
 		while(this.isActive){
 			long nowtime = System.nanoTime();
-			if(KaraokeSystem.notecounter < KaraokeSystem.notelist.size() && (nowtime - starttime) > KaraokeSystem.notelist.get(KaraokeSystem.notecounter).time * 1000000){
+			long elapsedtime = nowtime - starttime;
+			/*Midiノートを鳴らす*/
+			if(KaraokeSystem.notecounter < KaraokeSystem.notelist.size() && elapsedtime > KaraokeSystem.notelist.get(KaraokeSystem.notecounter).time * 1000000){
 				//note on
 				oldontime = nowtime;
-				playMidi(true, KaraokeSystem.notelist.get(KaraokeSystem.notecounter).notenumber);
-				System.out.println(Integer.toString(KaraokeSystem.notecounter) + ": on");
+				int notenumber = KaraokeSystem.notelist.get(KaraokeSystem.notecounter).notenumber;
+				playMidi(true, notenumber);
+				System.out.println(NoteNameUtil.convertNoteNumtoNoteName(notenumber));
 				KaraokeSystem.notecounter++;
 			}
 			/*if(KaraokeSystem.notecounter != 0 && offcounter < KaraokeSystem.notelist.size() && (nowtime - oldontime) > KaraokeSystem.notelist.get(offcounter).duration * 1000000){
@@ -61,6 +65,17 @@ public class KaraokeThread extends Thread{
 				offcounter++;
 				}*/
 			
+			/*棒を動かす,棒が最後までいけば表示されてるノーツも左に*/
+		   int seekbarposx = (int)(elapsedtime / 1000000 * KaraokeSystem.pixel_per_ms) - KaraokeSystem.zurashi;
+		   int panewidth = (int)KaraokeSystem.notepane.getWidth();
+			if(seekbarposx > panewidth){
+				KaraokeSystem.zurashi += panewidth;
+				for(NoteBox n : KaraokeSystem.noteboxlist){
+					n.setX(n.getX() - panewidth);
+				}
+			}
+			KaraokeSystem.seekbar.setStartX(seekbarposx);
+			KaraokeSystem.seekbar.setEndX(seekbarposx);
 		}
 	}
 }

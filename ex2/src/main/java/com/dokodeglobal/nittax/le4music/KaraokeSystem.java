@@ -15,16 +15,22 @@ import javafx.util.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import javafx.scene.shape.*;
 
 public class KaraokeSystem{
 	static public Boolean nowplaying = false;
 	static private File audioFile, midiFile;
-	static public List<NoteData> notelist;
-    static public AnchorPane notepane;
-	static public GUIController guicontroller;
-
-	static private KaraokeThread karaokethread;
-	static public Integer notecounter;
+	static public List<NoteData> notelist;      /*MidiCSVからよみこんだNoteDataのリスト*/
+	static public List<NoteBox> noteboxlist;    /*表示するノーツのBoxリスト*/
+    static public AnchorPane notepane;          /*ノーツを表示するPane*/
+	static public Line seekbar;                 /*Pane上で現在の位置を表すための棒,シークバー*/
+	static public GUIController guicontroller;  /*JavaFXのGUIControllerのクラスのインスタンスへの参照を保持しておく*/
+	static public int zurashi;                   /*ノーツのスクロール用.何pixelずらしたか*/
+	/*1msを何pixelで表すか*/
+	static public double pixel_per_ms = 24.0 / 188.0;
+	
+	static private KaraokeThread karaokethread; /*リアルタイム処理をするためのリスト*/
+	static public Integer notecounter;          /*何個目まで進んだか*/
 	//static public long starttime;
 	//static private long nowtime;
 	//static private int timercnt;
@@ -76,11 +82,20 @@ public class KaraokeSystem{
 	}
 	
 	static private void drawMidiNotes(){
+		noteboxlist = new ArrayList<NoteBox>();
 		for(int i = 0; i < notelist.size(); i++){
 			NoteData d = notelist.get(i);
 			NoteBox t = new NoteBox(d.notenumber, d.time, d.duration);
+			noteboxlist.add(t);
 			KaraokeSystem.notepane.getChildren().add(t);
 		}
+		
+		seekbar = new Line();
+		seekbar.setStartX(0.0f);
+		seekbar.setStartY(0.0f);
+		seekbar.setEndX(0.0f);
+		seekbar.setEndY(notepane.getHeight());
+		KaraokeSystem.notepane.getChildren().add(seekbar);
 	}
 
 	/*スタート可能かどうかをかえす*/
@@ -101,6 +116,7 @@ public class KaraokeSystem{
 										0L, 1L, TimeUnit.MILLISECONDS
 										);*/
 		notecounter = 0;
+		zurashi = 0;
 		karaokethread = new KaraokeThread();
 		karaokethread.start();
 		KaraokeSystem.nowplaying = true;

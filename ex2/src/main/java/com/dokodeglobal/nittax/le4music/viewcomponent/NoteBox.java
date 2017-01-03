@@ -1,6 +1,7 @@
 package com.dokodeglobal.nittax.le4music.viewcomponent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
+import com.dokodeglobal.nittax.le4music.KaraokeSystem;
 
 public class NoteBox extends Rectangle{
 	static public final int height = 6;
@@ -18,13 +19,12 @@ public class NoteBox extends Rectangle{
 	*/
 	
 	public NoteBox(int notenumber,long time, int length){
-		int x = (int)time * 12 / 188;
+		int x = (int)(time * KaraokeSystem.pixel_per_ms);
 		int y = height * (highest_notenumber - notenumber);
 		setX(x);
 		setY(y);
 		setHeight(height);
-		int width = length * 12 / 188;
-		System.out.println(Integer.toString(x) + "," + Integer.toString(width));
+		int width = (int)(length * KaraokeSystem.pixel_per_ms);
 		setWidth(width);
 		setStroke(Color.BLACK);
 		setFill(Color.RED);
