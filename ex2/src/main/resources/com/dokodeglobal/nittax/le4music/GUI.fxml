@@ -20,7 +20,7 @@
       <Button fx:id="startbutton" layoutX="56.0" layoutY="39.0" mnemonicParsing="false" onAction="#OnStartButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
       <Button fx:id="stopbutton" layoutX="117.0" layoutY="39.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Stop" />
       <Button fx:id="resetbutton" layoutX="176.0" layoutY="40.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Res" />
-      <SplitPane dividerPositions="0.5" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <SplitPane dividerPositions="0.37751004016064255" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <items>
           <AnchorPane fx:id="notepane" minHeight="0.0" minWidth="0.0" prefHeight="157.0" prefWidth="798.0" />
             <SplitPane dividerPositions="0.6190476190476191" prefHeight="160.0" prefWidth="200.0">
