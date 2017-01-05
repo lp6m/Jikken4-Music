@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.chart.*?>
@@ -25,8 +26,43 @@
           <AnchorPane fx:id="notepane" minHeight="0.0" minWidth="0.0" prefHeight="157.0" prefWidth="798.0" />
             <SplitPane dividerPositions="0.6190476190476191" prefHeight="160.0" prefWidth="200.0">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                  <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Music Spectrogram">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                      <Tab text="Microphone Spectrum">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <Label layoutX="29.0" layoutY="36.0" text="MIDI Notenumber:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="87.0" layoutY="70.0" text="MIDI Code:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="15.0" layoutY="106.0" text="Estimate Frequency:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="56.0" layoutY="144.0" text="Estimate Code:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
               </items>
             </SplitPane>
         </items>

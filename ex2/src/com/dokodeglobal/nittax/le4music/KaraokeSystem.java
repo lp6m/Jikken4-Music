@@ -6,12 +6,8 @@ import java.lang.Thread;
 import java.io.*;
 import java.util.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.animation.*;
-import javafx.application.Application;
-import javafx.event.*;
-import javafx.scene.*;
-import javafx.scene.control.Label;
-import javafx.util.Duration;
+import javax.sound.sampled.AudioSystem;
+import com.dokodeglobal.nittax.le4music.myutils.Recorder;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,7 +26,8 @@ public class KaraokeSystem{
 	static public int zurashi;                   /*ノーツのスクロール用.何pixelずらしたか*/
 	/*1msを何pixelで表すか*/
 	static public double pixel_per_ms = 24.0 / 188.0;
-	
+    static ScheduledExecutorService executor;
+	static private Recorder recorder;
 	static private KaraokeThread karaokethread; /*リアルタイム処理をするためのリスト*/
 	static public Integer notecounter;          /*何個目まで進んだか*/
 	//static public long starttime;
@@ -120,7 +117,7 @@ public class KaraokeSystem{
 
         try {
             musicplayer = Player.newPlayer(audioFile);
-            musicplayer.start();
+            //musicplayer.start();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -129,8 +126,27 @@ public class KaraokeSystem{
 		karaokethread = new KaraokeThread();
 		karaokethread.start();
 		KaraokeSystem.nowplaying = true;
+		try {
+            recorder = Recorder.newRecorder(16000.0D, 0.4D, AudioSystem.getMixerInfo()[0], null);
+            recorder.start();
+            executor = Executors.newSingleThreadScheduledExecutor();
+            executor.scheduleWithFixedDelay(
+                    () -> {
+                        final double[] frame = recorder.latestFrame();
+                        final double sampleRate = recorder.getSampleRate();
+                        final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
+                        final double logRms = 20.0 * Math.log10(rms);
+                        System.out.printf("RMS %f dB%n", logRms);
+                        //UpdateChartData(frame, sampleRate);
+                    },
+                    0L, 100L, TimeUnit.MILLISECONDS
+            );
+        }catch(Exception e){
+		    e.printStackTrace();
+        }
 
-	}
+
+    }
 	static public void stop(){
 		if(KaraokeSystem.nowplaying != true) return;
 		karaokethread.stopThread();
