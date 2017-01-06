@@ -11,16 +11,19 @@ import com.dokodeglobal.nittax.le4music.myutils.Recorder;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import com.dokodeglobal.nittax.le4music.analyzer.SpectrumChartNode;
 import javafx.scene.shape.*;
 import jp.ac.kyoto_u.kuis.le4music.Player;
 
 public class KaraokeSystem{
 	static public Boolean nowplaying = false;
 	static private File audioFile,midiFile;
-	static private Player musicplayer;           /*BGM*/
+	static public Player musicplayer;           /*BGM*/
 	static public List<NoteData> notelist;      /*MidiCSVからよみこんだNoteDataのリスト*/
 	static public List<NoteBox> noteboxlist;    /*表示するノーツのBoxリスト*/
     static public AnchorPane notepane;          /*ノーツを表示するPane*/
+    static public AnchorPane music_spectrogram_pane, microphone_spectrum_pane;
+    static private SpectrumChartNode spectrumChartNode;
 	static public Line seekbar;                 /*Pane上で現在の位置を表すための棒,シークバー*/
 	static public GUIController guicontroller;  /*JavaFXのGUIControllerのクラスのインスタンスへの参照を保持しておく*/
 	static public int zurashi;                   /*ノーツのスクロール用.何pixelずらしたか*/
@@ -117,7 +120,7 @@ public class KaraokeSystem{
 
         try {
             musicplayer = Player.newPlayer(audioFile);
-            //musicplayer.start();
+            musicplayer.start();
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -125,7 +128,8 @@ public class KaraokeSystem{
 		zurashi = 0;
 		karaokethread = new KaraokeThread();
 		karaokethread.start();
-		KaraokeSystem.nowplaying = true;
+        spectrumChartNode = new SpectrumChartNode();
+        microphone_spectrum_pane.getChildren().add(spectrumChartNode);
 		try {
             recorder = Recorder.newRecorder(16000.0D, 0.4D, AudioSystem.getMixerInfo()[0], null);
             recorder.start();
@@ -136,8 +140,11 @@ public class KaraokeSystem{
                         final double sampleRate = recorder.getSampleRate();
                         final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
                         final double logRms = 20.0 * Math.log10(rms);
-                        System.out.printf("RMS %f dB%n", logRms);
-                        //UpdateChartData(frame, sampleRate);
+                        //-130 ~ 0まで
+                        int volval = Math.min(Math.max(((int)logRms + 130) * 100 / 130, 0),100);
+                        guicontroller.updateVolumeProgressBar(volval);
+                        UpdateChartData(frame, sampleRate);
+
                     },
                     0L, 100L, TimeUnit.MILLISECONDS
             );
@@ -145,7 +152,7 @@ public class KaraokeSystem{
 		    e.printStackTrace();
         }
 
-
+        KaraokeSystem.nowplaying = true;
     }
 	static public void stop(){
 		if(KaraokeSystem.nowplaying != true) return;
@@ -153,5 +160,9 @@ public class KaraokeSystem{
 	}
 	static public void reset(){
 	}
+
+	static private void UpdateChartData(double[] frame,double sampleRate){
+        spectrumChartNode.UpdateDataSource(frame, sampleRate);
+    }
 	
 }

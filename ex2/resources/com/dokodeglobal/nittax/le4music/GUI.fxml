@@ -30,12 +30,12 @@
                     <tabs>
                       <Tab text="Music Spectrogram">
                         <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          <AnchorPane fx:id="music_spectrogram_pane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                         </content>
                       </Tab>
                       <Tab text="Microphone Spectrum">
                         <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          <AnchorPane fx:id="microphone_spectrum_pane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                         </content>
                       </Tab>
                     </tabs>
@@ -62,12 +62,34 @@
                               <Font size="17.0" />
                            </font>
                         </Label>
+                        <Label layoutX="196.0" layoutY="38.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="196.0" layoutY="72.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="196.0" layoutY="108.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="196.0" layoutY="146.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
                      </children></AnchorPane>
               </items>
             </SplitPane>
         </items>
       </SplitPane>
-      <Slider fx:id="musicSlider" layoutX="264.0" layoutY="50.0" prefHeight="16.0" prefWidth="335.0" />
+      <Slider fx:id="musicSlider" layoutX="255.0" layoutY="66.0" prefHeight="16.0" prefWidth="335.0" />
       <Label fx:id="timelabel" layoutX="555.0" layoutY="33.0" />
+      <ProgressBar fx:id="volumeprogressbar" layoutX="488.0" layoutY="38.0" prefHeight="20.0" prefWidth="283.0" progress="0.0" />
+      <Label layoutX="488.0" layoutY="19.0" text="Volume:" />
    </children>
 </AnchorPane>

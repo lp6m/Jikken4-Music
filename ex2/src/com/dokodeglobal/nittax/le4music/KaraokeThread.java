@@ -44,10 +44,12 @@ public class KaraokeThread extends Thread{
 		int oldseekbarpos = -1;
 		//int offcounter = 0;
 		while(this.isActive){
+
 			long nowtime = System.nanoTime();
-			long elapsedtime = nowtime - starttime;
+			//long elapsedtime = nowtime - starttime;
+			double elapsedtime = (double)KaraokeSystem.musicplayer.position() / KaraokeSystem.musicplayer.getSampleRate() * 1000;
 			/*Midiノートを鳴らす*/
-			if(KaraokeSystem.notecounter < KaraokeSystem.notelist.size() && elapsedtime > KaraokeSystem.notelist.get(KaraokeSystem.notecounter).time * 1000000){
+			if(KaraokeSystem.notecounter < KaraokeSystem.notelist.size() && elapsedtime  > KaraokeSystem.notelist.get(KaraokeSystem.notecounter).time){
 				//note on
 				oldontime = nowtime;
 				int notenumber = KaraokeSystem.notelist.get(KaraokeSystem.notecounter).notenumber;
@@ -63,7 +65,7 @@ public class KaraokeThread extends Thread{
 				}*/
 			
 			/*棒を動かす,棒が最後までいけば表示されてるノーツも左に*/
-		   int seekbarposx = (int)(elapsedtime / 1000000 * KaraokeSystem.pixel_per_ms) - KaraokeSystem.zurashi;
+		   int seekbarposx = (int)(elapsedtime * KaraokeSystem.pixel_per_ms) - KaraokeSystem.zurashi;
 		   int panewidth = (int)KaraokeSystem.notepane.getWidth();
 		   if(seekbarposx > panewidth){
 				KaraokeSystem.zurashi += panewidth;
