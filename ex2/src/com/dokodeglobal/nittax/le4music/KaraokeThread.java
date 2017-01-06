@@ -7,7 +7,7 @@ import com.dokodeglobal.nittax.le4music.myutils.NoteNameUtil;
 import com.dokodeglobal.nittax.le4music.viewcomponent.NoteBox;
 public class KaraokeThread extends Thread{
 	private Boolean isActive = true; /*スレッドがアクティブの時だけtrue*/
-
+    public int nownotenumber;
 	private Receiver receiver;
 
 	public KaraokeThread(){
@@ -53,8 +53,8 @@ public class KaraokeThread extends Thread{
 				//note on
 				oldontime = nowtime;
 				int notenumber = KaraokeSystem.notelist.get(KaraokeSystem.notecounter).notenumber;
+                this.nownotenumber = notenumber;
 				playMidi(true, notenumber);
-				System.out.println(NoteNameUtil.convertNoteNumtoNoteName(notenumber));
 				KaraokeSystem.notecounter++;
 			}
 			/*if(KaraokeSystem.notecounter != 0 && offcounter < KaraokeSystem.notelist.size() && (nowtime - oldontime) > KaraokeSystem.notelist.get(offcounter).duration * 1000000){

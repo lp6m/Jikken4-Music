@@ -22,6 +22,7 @@ public class GUIController implements Initializable{
 	@FXML AnchorPane notepane;
 	@FXML AnchorPane music_spectrogram_pane, microphone_spectrum_pane;
 	@FXML Label timelabel;
+	@FXML Label midinotenumber_label, midicode_label, estimate_freq_label, estimate_code_label;
 	@FXML
 	void OnAudioFileOpenButtonPressed(){
 		FileChooser fileChooser = new FileChooser();
@@ -72,5 +73,12 @@ public class GUIController implements Initializable{
 
 	public void updateVolumeProgressBar(int val){
         Platform.runLater( () -> volumeprogressbar.setProgress((double)val / 100.0));
+    }
+
+    public void updateStatusLabels(String a, String b, String c, String d){
+        Platform.runLater( () -> midinotenumber_label.setText(a));
+        Platform.runLater( () -> midicode_label.setText(b));
+        Platform.runLater( () -> estimate_freq_label.setText(c));
+        Platform.runLater( () -> estimate_code_label.setText(d));
     }
 }

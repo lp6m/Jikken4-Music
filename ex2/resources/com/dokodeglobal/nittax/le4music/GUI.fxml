@@ -62,22 +62,22 @@
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <Label layoutX="196.0" layoutY="38.0">
+                        <Label fx:id="midinotenumber_label" layoutX="196.0" layoutY="38.0">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <Label layoutX="196.0" layoutY="72.0">
+                        <Label fx:id="midicode_label" layoutX="196.0" layoutY="72.0">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <Label layoutX="196.0" layoutY="108.0">
+                        <Label fx:id="estimate_freq_label" layoutX="196.0" layoutY="108.0">
                            <font>
                               <Font size="17.0" />
                            </font>
                         </Label>
-                        <Label layoutX="196.0" layoutY="146.0">
+                        <Label fx:id="estimate_code_label" layoutX="196.0" layoutY="146.0">
                            <font>
                               <Font size="17.0" />
                            </font>

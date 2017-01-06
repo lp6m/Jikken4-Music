@@ -1,5 +1,6 @@
 package com.dokodeglobal.nittax.le4music;
 import com.dokodeglobal.nittax.le4music.midiutil.NoteData;
+import com.dokodeglobal.nittax.le4music.myutils.NoteNameUtil;
 import com.dokodeglobal.nittax.le4music.viewcomponent.NoteBox;
 
 import java.lang.Thread;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import com.dokodeglobal.nittax.le4music.analyzer.SpectrumChartNode;
+import com.dokodeglobal.nittax.le4music.analyzer.CalcSubharmonicSumation;
 import javafx.scene.shape.*;
 import jp.ac.kyoto_u.kuis.le4music.Player;
 
@@ -145,6 +147,12 @@ public class KaraokeSystem{
                         guicontroller.updateVolumeProgressBar(volval);
                         UpdateChartData(frame, sampleRate);
 
+                        double estimatefreq = CalcSubharmonicSumation.estimateFreq(frame, sampleRate);
+                        guicontroller.updateStatusLabels(
+                                Integer.toString(karaokethread.nownotenumber),
+                                NoteNameUtil.convertNoteNumtoNoteName(karaokethread.nownotenumber),
+                                (estimatefreq < 0 ? "-" : Double.toString(estimatefreq) + "Hz"),
+                                (estimatefreq < 0 ? "-" : NoteNameUtil.convertFreqtoNoteName(estimatefreq)));
                     },
                     0L, 100L, TimeUnit.MILLISECONDS
             );

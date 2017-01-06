@@ -51,7 +51,7 @@ public class SubharmonicSummationChartNode extends SwingNode{
 		yAxis.setLabel("Amplitude [dB]");	
 	}
 
-	public List<Double> UpdateDataSourceAndEstimateFreq(final double[] waveform, final double sampleRate,Label volumelabel){
+	public List<Double> UpdateDataSourceAndEstimateFreq(final double[] waveform, final double sampleRate){
 		try{
 			ChartPanel cp = (ChartPanel)this.getContent();
 			JFreeChart chart = (JFreeChart)cp.getChart();
@@ -61,13 +61,13 @@ public class SubharmonicSummationChartNode extends SwingNode{
 			final NumberAxis yAxis = (NumberAxis)plot.getRangeAxis();
 			List<double[]> data = calcSubharmonicSum(waveform, sampleRate);
 			plot.setDataset(createSubharmonicSum(data));
-			return estimateFreq(data,volumelabel);
+			return estimateFreq(data);
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
 	}
-	private List<Double> estimateFreq(List<double[]> data, Label volumelabel){
+	private List<Double> estimateFreq(List<double[]> data){
 		List<Double> rst = new ArrayList<Double>();
 		double[] freqs = data.get(0);
 		double[] shs = data.get(1);
