@@ -18,7 +18,7 @@ public class NoteBox extends Rectangle{
 	  ノーツ表示部の横幅をおよそ5秒とする
 	*/
 	
-	public NoteBox(int notenumber,long time, int length){
+	public NoteBox(int notenumber,long time, int length, Color col){
 		int x = (int)(time * KaraokeSystem.pixel_per_ms);
 		int y = height * (highest_notenumber - notenumber);
 		setX(x);
@@ -27,6 +27,6 @@ public class NoteBox extends Rectangle{
 		int width = (int)(length * KaraokeSystem.pixel_per_ms);
 		setWidth(width);
 		setStroke(Color.BLACK);
-		setFill(Color.RED);
+		setFill(col);
 	}
 }

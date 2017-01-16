@@ -46,7 +46,18 @@ public class GUIController implements Initializable{
 			KaraokeSystem.setMidiFile(midiFile);
 		}
 	}
-	
+
+	@FXML
+	void OnTestFileOpenButtonPressed(){
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Test File");
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("Test Wav Files", "*.wav"));
+		Stage stage = new Stage();
+		File testFile = fileChooser.showOpenDialog(stage);
+		if(testFile != null){
+			KaraokeSystem.setTestFile(testFile);
+		}
+	}
     @Override
     public void initialize(URL location, ResourceBundle resources){
 		KaraokeSystem.notepane = this.notepane;

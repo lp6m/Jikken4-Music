@@ -8,25 +8,25 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.FXCollections?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.GUIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.GUIController">
    <children>
-      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnAudioFileOpenButtonPressed" text="Select Audio File" />
-      <Button layoutX="152.0" layoutY="14.0" mnemonicParsing="false" onAction="#OnMidiFileOpenButtonPressed" text="Select Midi File" />
+      <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#OnAudioFileOpenButtonPressed" text="Select Audio File" />
+      <Button layoutX="14.0" layoutY="41.0" mnemonicParsing="false" onAction="#OnMidiFileOpenButtonPressed" text="Select Midi File" />
       <ChoiceBox fx:id="mixerlist" layoutX="291.0" layoutY="14.0" prefWidth="150.0">
 		<items>
           <FXCollections fx:factory="observableArrayList">
 		  </FXCollections>
 		  </items>
 	  </ChoiceBox>
-      <Button fx:id="startbutton" layoutX="56.0" layoutY="39.0" mnemonicParsing="false" onAction="#OnStartButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
-      <Button fx:id="stopbutton" layoutX="117.0" layoutY="39.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Stop" />
-      <Button fx:id="resetbutton" layoutX="176.0" layoutY="40.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Res" />
-      <SplitPane dividerPositions="0.37751004016064255" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <Button fx:id="startbutton" layoutX="291.0" layoutY="40.0" mnemonicParsing="false" onAction="#OnStartButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
+      <Button fx:id="stopbutton" layoutX="352.0" layoutY="40.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Stop" />
+      <Button fx:id="resetbutton" layoutX="411.0" layoutY="41.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Res" />
+      <SplitPane dividerPositions="0.37751004016064255" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
         <items>
-          <AnchorPane fx:id="notepane" minHeight="0.0" minWidth="0.0" prefHeight="157.0" prefWidth="798.0" />
+          <AnchorPane fx:id="notepane" minHeight="0.0" minWidth="0.0" prefHeight="146.0" prefWidth="1198.0" />
             <SplitPane dividerPositions="0.6190476190476191" prefHeight="160.0" prefWidth="200.0">
               <items>
-                  <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane prefHeight="343.0" prefWidth="738.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Music Spectrogram">
                         <content>
@@ -87,9 +87,10 @@
             </SplitPane>
         </items>
       </SplitPane>
-      <Slider fx:id="musicSlider" layoutX="255.0" layoutY="66.0" prefHeight="16.0" prefWidth="335.0" />
+      <Slider fx:id="musicSlider" layoutX="488.0" layoutY="66.0" prefHeight="16.0" prefWidth="335.0" />
       <Label fx:id="timelabel" layoutX="555.0" layoutY="33.0" />
       <ProgressBar fx:id="volumeprogressbar" layoutX="488.0" layoutY="38.0" prefHeight="20.0" prefWidth="283.0" progress="0.0" />
       <Label layoutX="488.0" layoutY="19.0" text="Volume:" />
+      <Button layoutX="15.0" layoutY="70.0" mnemonicParsing="false" onAction="#OnTestFileOpenButtonPressed" text="Select  Test File" />
    </children>
 </AnchorPane>

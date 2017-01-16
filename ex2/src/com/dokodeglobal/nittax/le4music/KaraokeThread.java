@@ -1,8 +1,11 @@
 package com.dokodeglobal.nittax.le4music;
 
 import java.lang.Thread;
-import javax.sound.sampled.*;
+
+import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import javax.sound.midi.*;
+import com.dokodeglobal.nittax.le4music.midiutil.NoteData;
 import com.dokodeglobal.nittax.le4music.myutils.NoteNameUtil;
 import com.dokodeglobal.nittax.le4music.viewcomponent.NoteBox;
 public class KaraokeThread extends Thread{
@@ -37,19 +40,39 @@ public class KaraokeThread extends Thread{
 			e.printStackTrace();
 		}
 	}
+	//notenumのノーツについて採点を行う
+	private int DoSaiten(int notenum) {
+	    if(notenum < 0) return -1;
+        try {
+            int[] level = KaraokeSystem.ScoreOfNote.get(notenum);
+            int maxcode = -1;
+            int bestscore = -1;
+            for (int i = 0; i < level.length; i++) {
+                if (bestscore < level[i]) {
+                    maxcode = i;
+                    bestscore = level[i];
+                }
+            }
+            return maxcode;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 	@Override
 	public void run(){
 		long starttime = System.nanoTime();
 		long oldontime = starttime;
 		int oldseekbarpos = -1;
-		//int offcounter = 0;
+		int offcounter = 0;
 		while(this.isActive){
 
 			long nowtime = System.nanoTime();
 			//long elapsedtime = nowtime - starttime;
 			double elapsedtime = (double)KaraokeSystem.musicplayer.position() / KaraokeSystem.musicplayer.getSampleRate() * 1000;
 			/*Midiノートを鳴らす*/
-			if(KaraokeSystem.notecounter < KaraokeSystem.notelist.size() && elapsedtime  > KaraokeSystem.notelist.get(KaraokeSystem.notecounter).time){
+			if(KaraokeSystem.notecounter < KaraokeSystem.notelist.size()
+               && elapsedtime  > KaraokeSystem.notelist.get(KaraokeSystem.notecounter).time){
 				//note on
 				oldontime = nowtime;
 				int notenumber = KaraokeSystem.notelist.get(KaraokeSystem.notecounter).notenumber;
@@ -57,12 +80,22 @@ public class KaraokeThread extends Thread{
 				playMidi(true, notenumber);
 				KaraokeSystem.notecounter++;
 			}
-			/*if(KaraokeSystem.notecounter != 0 && offcounter < KaraokeSystem.notelist.size() && (nowtime - oldontime) > KaraokeSystem.notelist.get(offcounter).duration * 1000000){
-				//note off
-				playMidi(false, KaraokeSystem.notelist.get(KaraokeSystem.notecounter).notenumber);
-				System.out.println(Integer.toString(offcounter) + ": off");
-				offcounter++;
-				}*/
+
+			if(offcounter < KaraokeSystem.notelist.size()
+               && elapsedtime > KaraokeSystem.notelist.get(offcounter).duration + KaraokeSystem.notelist.get(offcounter).time){
+				//note off 判定を行う
+                int rst = DoSaiten(offcounter);
+                if(rst >= 0){
+                    //ノーツ追加
+                    NoteData d = KaraokeSystem.notelist.get(offcounter);
+                    int saiten_rst = NoteData.GetSaitenNotenumber(rst, d.notenumber);
+                    NoteBox n = new NoteBox(saiten_rst, d.time, d.duration, Color.YELLOW);
+                    Platform.runLater(() -> KaraokeSystem.notepane.getChildren().add(n));
+                    n.setX(KaraokeSystem.noteboxlist.get(offcounter).getX());
+                    KaraokeSystem.scorenotelist.add(n);
+                }
+                offcounter++;
+            }
 			
 			/*棒を動かす,棒が最後までいけば表示されてるノーツも左に*/
 		   int seekbarposx = (int)(elapsedtime * KaraokeSystem.pixel_per_ms) - KaraokeSystem.zurashi;
@@ -72,6 +105,10 @@ public class KaraokeThread extends Thread{
 				for(NoteBox n : KaraokeSystem.noteboxlist){
 					n.setX(n.getX() - panewidth);
 				}
+				for(int i = 0; i < KaraokeSystem.scorenotelist.size(); i++){
+				    NoteBox n = KaraokeSystem.scorenotelist.get(i);
+                    n.setX(n.getX() - panewidth);
+                }
 			}
 			if(oldseekbarpos != seekbarposx){
 		       //KaraokeSystem.seekbar.setStartX(seekbarposx);
