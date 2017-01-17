@@ -5,7 +5,7 @@ public class NoteData{
 	public long time;
 	public int notenumber;
 	public int duration;
-	static int tolerance = 5; /*カラオケ採点における許容誤差*/
+	static int tolerance = 2; /*カラオケ採点における許容誤差*/
 
 	//NoteDataのリストを受け取り現在どのノーツかを返す
     public static int GetNoteNumFromTimeandNoteList(double time, List<NoteData> notelist){

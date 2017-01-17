@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.collections.FXCollections?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.GUIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="703.0" prefWidth="1042.0" stylesheets="@mystyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.GUIController">
    <children>
       <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#OnAudioFileOpenButtonPressed" text="Select Audio File" />
       <Button layoutX="14.0" layoutY="41.0" mnemonicParsing="false" onAction="#OnMidiFileOpenButtonPressed" text="Select Midi File" />
@@ -18,10 +18,9 @@
 		  </FXCollections>
 		  </items>
 	  </ChoiceBox>
-      <Button fx:id="startbutton" layoutX="291.0" layoutY="40.0" mnemonicParsing="false" onAction="#OnStartButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
-      <Button fx:id="stopbutton" layoutX="352.0" layoutY="40.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Stop" />
-      <Button fx:id="resetbutton" layoutX="411.0" layoutY="41.0" mnemonicParsing="false" styleClass="circle-button" stylesheets="@mystyle.css" text="Res" />
-      <SplitPane dividerPositions="0.37751004016064255" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+      <Button fx:id="startbutton" layoutX="291.0" layoutY="44.0" mnemonicParsing="false" onAction="#OnStartButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
+      <Button fx:id="resetbutton" layoutX="353.0" layoutY="44.0" mnemonicParsing="false" onAction="#OnResButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Res" />
+      <SplitPane dividerPositions="0.23979591836734693" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
         <items>
           <AnchorPane fx:id="notepane" minHeight="0.0" minWidth="0.0" prefHeight="146.0" prefWidth="1198.0" />
             <SplitPane dividerPositions="0.6190476190476191" prefHeight="160.0" prefWidth="200.0">
@@ -33,11 +32,11 @@
                           <AnchorPane fx:id="music_spectrogram_pane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                         </content>
                       </Tab>
-                      <Tab text="Microphone Spectrum">
-                        <content>
-                          <AnchorPane fx:id="microphone_spectrum_pane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                        </content>
-                      </Tab>
+                        <Tab text="Microphone Spectrum">
+                           <content>
+                              <AnchorPane fx:id="microphone_spectrum_pane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                           </content>
+                        </Tab>
                     </tabs>
                   </TabPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -82,6 +81,16 @@
                               <Font size="17.0" />
                            </font>
                         </Label>
+                        <Label layoutX="127.0" layoutY="182.0" text="Score:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="score_label" layoutX="200.0" layoutY="182.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
                      </children></AnchorPane>
               </items>
             </SplitPane>
@@ -90,7 +99,10 @@
       <Slider fx:id="musicSlider" layoutX="488.0" layoutY="66.0" prefHeight="16.0" prefWidth="335.0" />
       <Label fx:id="timelabel" layoutX="555.0" layoutY="33.0" />
       <ProgressBar fx:id="volumeprogressbar" layoutX="488.0" layoutY="38.0" prefHeight="20.0" prefWidth="283.0" progress="0.0" />
-      <Label layoutX="488.0" layoutY="19.0" text="Volume:" />
+      <Label layoutX="488.0" layoutY="19.0" stylesheets="@mystyle.css" text="Volume:" />
       <Button layoutX="15.0" layoutY="70.0" mnemonicParsing="false" onAction="#OnTestFileOpenButtonPressed" text="Select  Test File" />
+      <Label fx:id="audiofile_label" layoutX="145.0" layoutY="15.0" text="" />
+      <Label fx:id="notefile_label" layoutX="145.0" layoutY="46.0" text="" />
+      <Label fx:id="testfile_label" layoutX="145.0" layoutY="75.0" text="" />
    </children>
 </AnchorPane>

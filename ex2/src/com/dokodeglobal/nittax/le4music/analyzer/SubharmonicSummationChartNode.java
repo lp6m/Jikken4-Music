@@ -109,19 +109,17 @@ public class SubharmonicSummationChartNode extends SwingNode{
 		double[] shs = new double[freqs.length];
 		for(int f = 0; f < freqs.length; f++){
 			double shsum = 0;
-			for(int n = 1; n <= 5; n++){
+			for(int n = 1; n <= 15; n++){
 				int nf = (n * f) % freqs.length;
 				if(n * f >= freqs.length) continue;
 				/*x(nf)を求める*/
 				double x = specLog[nf];
 				/*w(nf)はhamming窓nfがナイキスト周波数こえる場合は0とする*/
 				double w =  0.54 - 0.46 * Math.cos(2 * Math.PI * (double)nf / (double)freqs.length);
-				//double w = 1.0;
 				double h = Math.pow(0.84, n-1);
 				shsum += h * w * x;
 			}
 			shs[f] = shsum;
-			//System.out.println(shsum);
 		}
 		rst.add(freqs);
 		rst.add(shs);

@@ -64,8 +64,8 @@ public final class SpectrumChartNode extends SwingNode{
 		/* 高 速 フ ー リ エ 変 換 を 行 う */
 		final Complex[] spectrum = Le4MusicUtils.rfft(src);
 		/* 対 数 振 幅 ス ペ ク ト ル を 求 め る */
-		//		double[] specLog = Arrays.stream(spectrum).mapToDouble(c -> 20.0 * Math.log10(c.abs())).toArray();
-		double[] specLog = Arrays.stream(spectrum).mapToDouble(c -> c.abs()).toArray();
+		double[] specLog = Arrays.stream(spectrum).mapToDouble(c -> 20.0 * Math.log10(c.abs())).toArray();
+		//double[] specLog = Arrays.stream(spectrum).mapToDouble(c -> c.abs()).toArray();
 		/* 周 波 数 を 求 め る ． 以 下 を 満 た す よ う に 線 型 に
 		* freqs[0] = 0Hz
 		* freqs[fftSize2 - 1] = sampleRate / 2 (= Nyquist周波数) */
@@ -83,7 +83,7 @@ public final class SpectrumChartNode extends SwingNode{
 			final NumberAxis xAxis = (NumberAxis)plot.getDomainAxis();
 			xAxis.setRange(0.0, 0.5 * sampleRate);
 			final NumberAxis yAxis = (NumberAxis)plot.getRangeAxis();
-			//			yAxis.setRange(-160.0,0);
+			yAxis.setRange(-160.0,0);
 			final double[] times = IntStream.range(0, waveform.length).mapToDouble(i -> i / sampleRate).toArray();
 			plot.setDataset(createSpectrumData(waveform,sampleRate));
 		}catch(Exception e){

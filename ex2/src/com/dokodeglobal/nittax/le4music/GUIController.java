@@ -22,7 +22,8 @@ public class GUIController implements Initializable{
 	@FXML AnchorPane notepane;
 	@FXML AnchorPane music_spectrogram_pane, microphone_spectrum_pane;
 	@FXML Label timelabel;
-	@FXML Label midinotenumber_label, midicode_label, estimate_freq_label, estimate_code_label;
+	@FXML Label audiofile_label, notefile_label, testfile_label;
+	@FXML Label midinotenumber_label, midicode_label, estimate_freq_label, estimate_code_label, score_label;
 	@FXML
 	void OnAudioFileOpenButtonPressed(){
 		FileChooser fileChooser = new FileChooser();
@@ -71,7 +72,15 @@ public class GUIController implements Initializable{
 	public void OnStartButtonPressed() throws Exception{
 		if(KaraokeSystem.nowplaying == false && KaraokeSystem.canStart()){
 			KaraokeSystem.nowplaying = true;
+			KaraokeSystem.initialize();
 			KaraokeSystem.start();
+		}
+	}
+
+	@FXML
+	public void OnResButtonPressed() throws Exception{
+		if(KaraokeSystem.nowplaying){
+			KaraokeSystem.shutdown();
 		}
 	}
 
@@ -86,10 +95,11 @@ public class GUIController implements Initializable{
         Platform.runLater( () -> volumeprogressbar.setProgress((double)val / 100.0));
     }
 
-    public void updateStatusLabels(String a, String b, String c, String d){
+    public void updateStatusLabels(String a, String b, String c, String d, String e){
         Platform.runLater( () -> midinotenumber_label.setText(a));
         Platform.runLater( () -> midicode_label.setText(b));
         Platform.runLater( () -> estimate_freq_label.setText(c));
         Platform.runLater( () -> estimate_code_label.setText(d));
+        Platform.runLater( () -> score_label.setText(e));
     }
 }

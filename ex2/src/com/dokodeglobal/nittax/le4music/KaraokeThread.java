@@ -89,6 +89,10 @@ public class KaraokeThread extends Thread{
                     //ノーツ追加
                     NoteData d = KaraokeSystem.notelist.get(offcounter);
                     int saiten_rst = NoteData.GetSaitenNotenumber(rst, d.notenumber);
+                    //スコア更新
+                    if(saiten_rst == d.notenumber) {
+                        KaraokeSystem.nowscore += 100.0 / (double)KaraokeSystem.notelist.size();
+                    }
                     NoteBox n = new NoteBox(saiten_rst, d.time, d.duration, Color.YELLOW);
                     Platform.runLater(() -> KaraokeSystem.notepane.getChildren().add(n));
                     n.setX(KaraokeSystem.noteboxlist.get(offcounter).getX());
@@ -116,6 +120,11 @@ public class KaraokeThread extends Thread{
                 oldseekbarpos = seekbarposx;
             }
 
+            /*musicplayerが終われば自動終了するようにする*/
+			if(!KaraokeSystem.musicplayer.isActive()){
+				this.isActive = false;
+				KaraokeSystem.shutdown();
+			}
 		}
 	}
 }

@@ -3,20 +3,26 @@ import com.dokodeglobal.nittax.le4music.midiutil.NoteData;
 import com.dokodeglobal.nittax.le4music.myutils.NoteNameUtil;
 import com.dokodeglobal.nittax.le4music.viewcomponent.NoteBox;
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javafx.scene.paint.Color;
 import java.io.*;
 import java.util.*;
 import javafx.scene.layout.AnchorPane;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import com.dokodeglobal.nittax.le4music.analyzer.SpectrumChartNode;
 import com.dokodeglobal.nittax.le4music.analyzer.CalcSubharmonicSumation;
+import com.dokodeglobal.nittax.le4music.analyzer.RealTimeSpectrogramChartNode;
 import javafx.scene.shape.*;
+import jp.ac.kyoto_u.kuis.le4music.Le4MusicUtils;
 import jp.ac.kyoto_u.kuis.le4music.Player;
 import jp.ac.kyoto_u.kuis.le4music.Recorder;
-import javafx.embed.swing.SwingNode;
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.util.MathArrays;
 
 public class KaraokeSystem{
 	static public Boolean nowplaying = false;
@@ -29,7 +35,7 @@ public class KaraokeSystem{
     static public AnchorPane notepane;          /*ノーツを表示するPane*/
     static public AnchorPane music_spectrogram_pane, microphone_spectrum_pane;
     static private SpectrumChartNode spectrumChartNode;
-    static private SwingNode spectrogramSwingNode;
+    static private RealTimeSpectrogramChartNode realtime_music_spectrogramChartNode;
 	static public Line seekbar;                 /*Pane上で現在の位置を表すための棒,シークバー*/
 	static public GUIController guicontroller;  /*JavaFXのGUIControllerのクラスのインスタンスへの参照を保持しておく*/
 	static public int zurashi;                   /*ノーツのスクロール用.何pixelずらしたか*/
@@ -37,19 +43,15 @@ public class KaraokeSystem{
 	static public double pixel_per_ms = 24.0 / 188.0;
     static ScheduledExecutorService executor;
 	static private Recorder recorder;
+	static private ScheduledExecutorService spectrogram_executor;
 	static private KaraokeThread karaokethread; /*リアルタイム処理をするためのリスト*/
 	static public Integer notecounter;          /*何個目まで進んだか*/
-	//static public long starttime;
-	//static private long nowtime;
-	//static private int timercnt;
-	//static private ScheduledExecutorService executor;
+    static public double nowscore;
 	static public void setaudioFile(File audioFile){
 		KaraokeSystem.audioFile = audioFile;
 	}
 	static public void setMidiFile(File midiFile){
 		KaraokeSystem.midiFile = midiFile;
-		openMidiFile();
-		drawMidiNotes();
 	}
 	static public void setTestFile(File testFile){
 	    KaraokeSystem.testFile = testFile;
@@ -115,31 +117,48 @@ public class KaraokeSystem{
 		if(audioFile != null && midiFile != null) return true;
 		else return false;
 	}
-
-	static public void start(){
-		//starttime = System.nanoTime();
-		/*timercnt = 0;
-		executor = Executors.newSingleThreadScheduledExecutor();
-		executor.scheduleWithFixedDelay(
-										() -> {
-											//1ミリ秒ごとに実行されるコードをかく
-											//1ミリ秒ごとにカウンタを増加させると誤差がひどくなるのでSystem.nanoTimeを利用する
-										},
-										0L, 1L, TimeUnit.MILLISECONDS
-										);*/
-
+    //初期化処理をおこなう
+    static public void initialize(){
+        /*GUI関連*/
+        notepane.getChildren().clear();
+        music_spectrogram_pane.getChildren().clear();
+        microphone_spectrum_pane.getChildren().clear();
+        guicontroller.updateStatusLabels("","","","", "");
+        guicontroller.updateVolumeProgressBar(0);
+        /*データ関連*/
+        if(notelist != null) notelist.clear();
+        if(noteboxlist != null) noteboxlist.clear();
+        if(scorenotelist != null) scorenotelist.clear();
+        if(ScoreOfNote != null) ScoreOfNote.clear();
+        nowscore = 0;
+    }
+    static public void shutdown() {
+        karaokethread.stopThread();
+        if(musicplayer != null && musicplayer.isActive()) musicplayer.stop();
+        if(recorder != null && recorder.isActive()) recorder.stop();
+        if(testFilePlayer != null && testFilePlayer.isActive()) testFilePlayer.stop();
+        if(spectrogram_executor != null) spectrogram_executor.shutdown();
+        KaraokeSystem.nowplaying = false;
+    }
+	static public void start() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
+        openMidiFile();
+        drawMidiNotes();
+        System.out.println("ready");
 		notecounter = 0;
 		zurashi = 0;
 		karaokethread = new KaraokeThread();
 
+        musicplayer = Player.newPlayer(audioFile, 0.1D, 0.4D, null, false);
         spectrumChartNode = new SpectrumChartNode();
+        realtime_music_spectrogramChartNode = new RealTimeSpectrogramChartNode(musicplayer.getFrameSize(),(int)musicplayer.getSampleRate());
         microphone_spectrum_pane.getChildren().add(spectrumChartNode);
-        KaraokeSystem.ScoreOfNote = new ArrayList<int[]>();
+        music_spectrogram_pane.getChildren().add(realtime_music_spectrogramChartNode);
+
+        KaraokeSystem.ScoreOfNote = new ArrayList<>();
         if(KaraokeSystem.testFile == null) {
             try {
-                musicplayer = Player.newPlayer(audioFile, 0.1D, 0.4D, null, false);
                 recorder = Recorder.newRecorder(16000.0D, 0.02D, AudioSystem.getMixerInfo()[0], null);
-				recorder.addAudioFrameListener((frame, position) -> {
+                recorder.addAudioFrameListener((frame, position) -> {
                     final double sampleRate = recorder.getSampleRate();
                     final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
                     final double logRms = 20.0 * Math.log10(rms);
@@ -147,16 +166,14 @@ public class KaraokeSystem{
                     int volval = Math.min(Math.max(((int) logRms + 130) * 100 / 130, 0), 100);
                     guicontroller.updateVolumeProgressBar(volval);
                     UpdateChartData(frame, sampleRate);
-
                     double estimatefreq = CalcSubharmonicSumation.estimateFreq(frame, sampleRate);
-
                     guicontroller.updateStatusLabels(
                             Integer.toString(karaokethread.nownotenumber),
                             NoteNameUtil.convertNoteNumtoNoteName(karaokethread.nownotenumber),
                             (estimatefreq < 0 ? "-" : Double.toString(estimatefreq) + "Hz"),
-                            (estimatefreq < 0 ? "-" : NoteNameUtil.convertFreqtoNoteName(estimatefreq)));
+                            (estimatefreq < 0 ? "-" : NoteNameUtil.convertFreqtoNoteName(estimatefreq)),
+                            Integer.toString((int)KaraokeSystem.nowscore));
                     final double posInSec = musicplayer.position() / sampleRate;
-                    System.out.println(posInSec);
                     SaitenRoutine(posInSec, estimatefreq);
 				});
                 recorder.start();
@@ -165,6 +182,20 @@ public class KaraokeSystem{
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            spectrogram_executor = Executors.newSingleThreadScheduledExecutor();
+            spectrogram_executor.scheduleWithFixedDelay(
+                    () -> {
+                        try {
+                            final double[] frame = musicplayer.latestFrame();
+                            realtime_music_spectrogramChartNode.UpdateDataSource(frame, musicplayer.getSampleRate());
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    },
+                    0L,(long)(Le4MusicUtils.frameDuration * 1000000 / 8.0),
+                    TimeUnit.MICROSECONDS
+            );
         }else {
             try {
                 //testFileをテストデータとする
@@ -174,17 +205,18 @@ public class KaraokeSystem{
                     final double logRms = 20.0 * Math.log10(rms);
                     final double sampleRate = testFilePlayer.getSampleRate();
                     final double posInSec = position / sampleRate;
+                    int volval = Math.min(Math.max(((int) logRms + 130) * 100 / 130, 0), 100);
+                    guicontroller.updateVolumeProgressBar(volval);
+                    UpdateChartData(frame, sampleRate);
                     double estimatefreq = CalcSubharmonicSumation.estimateFreq(frame, sampleRate);
-
                     guicontroller.updateStatusLabels(
                             Integer.toString(karaokethread.nownotenumber),
                             NoteNameUtil.convertNoteNumtoNoteName(karaokethread.nownotenumber),
                             (estimatefreq < 0 ? "-" : Double.toString(estimatefreq) + "Hz"),
-                            (estimatefreq < 0 ? "-" : NoteNameUtil.convertFreqtoNoteName(estimatefreq)));
+                            (estimatefreq < 0 ? "-" : NoteNameUtil.convertFreqtoNoteName(estimatefreq)),
+                            Integer.toString((int)KaraokeSystem.nowscore));
                     SaitenRoutine(posInSec, estimatefreq);
-
                 });
-                musicplayer = Player.newPlayer(audioFile, 0.1D, 0.4D, null, false);
                 musicplayer.start();
                 testFilePlayer.start();
                 karaokethread.start();
@@ -192,15 +224,9 @@ public class KaraokeSystem{
                 e.printStackTrace();
             }
         }
-
         KaraokeSystem.nowplaying = true;
     }
-	static public void stop(){
-		if(KaraokeSystem.nowplaying != true) return;
-		karaokethread.stopThread();
-	}
-	static public void reset(){
-	}
+
 
 	static private void UpdateChartData(double[] frame,double sampleRate){
         spectrumChartNode.UpdateDataSource(frame, sampleRate);
