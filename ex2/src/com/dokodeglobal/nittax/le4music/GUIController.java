@@ -13,6 +13,9 @@ import java.util.*;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.scene.control.ProgressBar;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.AudioInputStream;
 
 public class GUIController implements Initializable{
 	@FXML ChoiceBox mixerlist;
@@ -66,6 +69,11 @@ public class GUIController implements Initializable{
 		KaraokeSystem.music_spectrogram_pane = this.music_spectrogram_pane;
 		//KaraokeSystem.timelabel = this.timelabel;
 		KaraokeSystem.guicontroller = this;
+		Mixer.Info[] infoList = AudioSystem.getMixerInfo();
+		for(int i = 0; i < infoList.length; i++){
+			mixerlist.getItems().add(infoList[i].getName());
+		}
+		mixerlist.getSelectionModel().selectFirst();
 	}
 
 	@FXML
@@ -101,5 +109,8 @@ public class GUIController implements Initializable{
         Platform.runLater( () -> estimate_freq_label.setText(c));
         Platform.runLater( () -> estimate_code_label.setText(d));
         Platform.runLater( () -> score_label.setText(e));
+    }
+    public Mixer.Info getNowSelectMixer(){Mixer.Info[] infoList = AudioSystem.getMixerInfo();
+         return infoList[(int)mixerlist.getSelectionModel().getSelectedIndex()];
     }
 }

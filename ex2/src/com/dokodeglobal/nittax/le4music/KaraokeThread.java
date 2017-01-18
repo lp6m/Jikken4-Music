@@ -62,7 +62,6 @@ public class KaraokeThread extends Thread{
 	@Override
 	public void run(){
 		long starttime = System.nanoTime();
-		long oldontime = starttime;
 		int oldseekbarpos = -1;
 		int offcounter = 0;
 		while(this.isActive){
@@ -74,7 +73,6 @@ public class KaraokeThread extends Thread{
 			if(KaraokeSystem.notecounter < KaraokeSystem.notelist.size()
                && elapsedtime  > KaraokeSystem.notelist.get(KaraokeSystem.notecounter).time){
 				//note on
-				oldontime = nowtime;
 				int notenumber = KaraokeSystem.notelist.get(KaraokeSystem.notecounter).notenumber;
                 this.nownotenumber = notenumber;
 				playMidi(true, notenumber);

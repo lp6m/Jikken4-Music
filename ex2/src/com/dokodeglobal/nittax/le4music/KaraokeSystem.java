@@ -131,6 +131,9 @@ public class KaraokeSystem{
         if(scorenotelist != null) scorenotelist.clear();
         if(ScoreOfNote != null) ScoreOfNote.clear();
         nowscore = 0;
+        notecounter = 0;
+        zurashi = 0;
+        KaraokeSystem.ScoreOfNote = new ArrayList<>();
     }
     static public void shutdown() {
         karaokethread.stopThread();
@@ -141,61 +144,55 @@ public class KaraokeSystem{
         KaraokeSystem.nowplaying = false;
     }
 	static public void start() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
+        /*お手本midiノーツ読み込み・描画*/
         openMidiFile();
         drawMidiNotes();
-        System.out.println("ready");
-		notecounter = 0;
-		zurashi = 0;
+		/*スレッドを新規作成*/
 		karaokethread = new KaraokeThread();
-
+        /*BGMプレイヤー作成*/
         musicplayer = Player.newPlayer(audioFile, 0.1D, 0.4D, null, false);
+        /*スペクトラム及びスペクトログラム新規作成・GUIPaneに追加*/
         spectrumChartNode = new SpectrumChartNode();
         realtime_music_spectrogramChartNode = new RealTimeSpectrogramChartNode(musicplayer.getFrameSize(),(int)musicplayer.getSampleRate());
         microphone_spectrum_pane.getChildren().add(spectrumChartNode);
         music_spectrogram_pane.getChildren().add(realtime_music_spectrogramChartNode);
 
-        KaraokeSystem.ScoreOfNote = new ArrayList<>();
+        /*採点対象の音響信号をマイクから取り込む場合とファイルから読み込む場合とで処理を分岐*/
         if(KaraokeSystem.testFile == null) {
             try {
-                recorder = Recorder.newRecorder(16000.0D, 0.02D, AudioSystem.getMixerInfo()[0], null);
+                /*マイクから音響信号を取り込む場合*/
+                recorder = Recorder.newRecorder(16000.0D, 0.02D,  guicontroller.getNowSelectMixer(), null);
+                /*フレームごとに行う処理を記述*/
                 recorder.addAudioFrameListener((frame, position) -> {
+                    /*音量計算*/
                     final double sampleRate = recorder.getSampleRate();
                     final double rms = Arrays.stream(frame).map(x -> x * x).average().orElse(0.0);
                     final double logRms = 20.0 * Math.log10(rms);
-                    //-130 ~ 0まで
+                    //音量の値をGUIに反映*/
                     int volval = Math.min(Math.max(((int) logRms + 130) * 100 / 130, 0), 100);
                     guicontroller.updateVolumeProgressBar(volval);
+                    /*音響信号からスペクトラムを更新*/
                     UpdateChartData(frame, sampleRate);
+                    /*音響信号から基本周波数を推定*/
                     double estimatefreq = CalcSubharmonicSumation.estimateFreq(frame, sampleRate);
+                    /*現在再生中のMidiノーツや推定した基本周波数をGUIに反映*/
                     guicontroller.updateStatusLabels(
                             Integer.toString(karaokethread.nownotenumber),
                             NoteNameUtil.convertNoteNumtoNoteName(karaokethread.nownotenumber),
                             (estimatefreq < 0 ? "-" : Double.toString(estimatefreq) + "Hz"),
                             (estimatefreq < 0 ? "-" : NoteNameUtil.convertFreqtoNoteName(estimatefreq)),
                             Integer.toString((int)KaraokeSystem.nowscore));
+                    /*推定した基本周波数をリストに格納するルーチンを呼ぶ*/
                     final double posInSec = musicplayer.position() / sampleRate;
                     SaitenRoutine(posInSec, estimatefreq);
 				});
+                /*マイクからの取り込み・BGMの再生・スレッドの開始*/
                 recorder.start();
                 musicplayer.start();
                 karaokethread.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            spectrogram_executor = Executors.newSingleThreadScheduledExecutor();
-            spectrogram_executor.scheduleWithFixedDelay(
-                    () -> {
-                        try {
-                            final double[] frame = musicplayer.latestFrame();
-                            realtime_music_spectrogramChartNode.UpdateDataSource(frame, musicplayer.getSampleRate());
-                        }catch(Exception e){
-                            e.printStackTrace();
-                        }
-                    },
-                    0L,(long)(Le4MusicUtils.frameDuration * 1000000 / 8.0),
-                    TimeUnit.MICROSECONDS
-            );
         }else {
             try {
                 //testFileをテストデータとする
@@ -224,6 +221,22 @@ public class KaraokeSystem{
                 e.printStackTrace();
             }
         }
+        /*スペクトログラム更新用のexecutor*/
+        spectrogram_executor = Executors.newSingleThreadScheduledExecutor();
+        spectrogram_executor.scheduleWithFixedDelay(
+                () -> {
+                    try {
+                        final double[] frame = musicplayer.latestFrame();
+                        /*スペクトログラム更新*/
+                        realtime_music_spectrogramChartNode.UpdateDataSource(frame, musicplayer.getSampleRate());
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                },
+                0L,(long)(Le4MusicUtils.frameDuration * 1000000 / 8.0),
+                TimeUnit.MICROSECONDS
+        );
+        /*再生中フラグを立てる*/
         KaraokeSystem.nowplaying = true;
     }
 
