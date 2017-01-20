@@ -142,7 +142,7 @@ public class GUIController implements Initializable{
 													//System.out.printf("RMS %f dB%n", logRms);
 													UpdateChartData(frame, sampleRate);
 												},
-												0L, 100L, TimeUnit.MILLISECONDS
+												0L, 20L, TimeUnit.MILLISECONDS
 												);
 				realtime_analyze_button.setText("Stop");
 				filechoose_button.setDisable(true);

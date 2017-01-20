@@ -3,8 +3,15 @@ ex1/project/target
 ex1/project/project/target
 *.wav
 ex1/lib/le4music.jar
-
+ex1/target
 ex2/target
 ex2/project/target
 ex2/project/project/target
 ex2/lib/le4music.jar
+
+ex2/.idea/
+ex2/tmp/
+ex2/out/
+ex2/bin/
+*.test
+*.swp

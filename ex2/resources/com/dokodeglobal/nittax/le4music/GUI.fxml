@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="703.0" prefWidth="1042.0" stylesheets="@mystyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dokodeglobal.nittax.le4music.GUIController">
+   <children>
+      <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#OnAudioFileOpenButtonPressed" text="Select Audio File" />
+      <Button layoutX="14.0" layoutY="41.0" mnemonicParsing="false" onAction="#OnMidiFileOpenButtonPressed" text="Select Midi File" />
+      <ChoiceBox fx:id="mixerlist" layoutX="291.0" layoutY="14.0" prefWidth="150.0">
+		<items>
+          <FXCollections fx:factory="observableArrayList">
+		  </FXCollections>
+		  </items>
+	  </ChoiceBox>
+      <Button fx:id="startbutton" layoutX="291.0" layoutY="44.0" mnemonicParsing="false" onAction="#OnStartButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Start" />
+      <Button fx:id="resetbutton" layoutX="353.0" layoutY="44.0" mnemonicParsing="false" onAction="#OnResButtonPressed" styleClass="circle-button" stylesheets="@mystyle.css" text="Res" />
+      <SplitPane dividerPositions="0.23979591836734693" layoutX="108.0" layoutY="105.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+        <items>
+          <AnchorPane fx:id="notepane" minHeight="0.0" minWidth="0.0" prefHeight="146.0" prefWidth="1198.0" />
+            <SplitPane dividerPositions="0.6190476190476191" prefHeight="160.0" prefWidth="200.0">
+              <items>
+                  <TabPane prefHeight="343.0" prefWidth="738.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Music Spectrogram">
+                        <content>
+                          <AnchorPane fx:id="music_spectrogram_pane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                        <Tab text="Microphone Spectrum">
+                           <content>
+                              <AnchorPane fx:id="microphone_spectrum_pane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                           </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <Label layoutX="29.0" layoutY="36.0" text="MIDI Notenumber:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="87.0" layoutY="70.0" text="MIDI Code:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="15.0" layoutY="106.0" text="Estimate Frequency:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="56.0" layoutY="144.0" text="Estimate Code:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="midinotenumber_label" layoutX="196.0" layoutY="38.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="midicode_label" layoutX="196.0" layoutY="72.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="estimate_freq_label" layoutX="196.0" layoutY="108.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="estimate_code_label" layoutX="196.0" layoutY="146.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="127.0" layoutY="182.0" text="Score:">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="score_label" layoutX="200.0" layoutY="182.0">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
+              </items>
+            </SplitPane>
+        </items>
+      </SplitPane>
+      <Slider fx:id="musicSlider" layoutX="488.0" layoutY="66.0" prefHeight="16.0" prefWidth="335.0" />
+      <Label fx:id="timelabel" layoutX="555.0" layoutY="33.0" />
+      <ProgressBar fx:id="volumeprogressbar" layoutX="488.0" layoutY="38.0" prefHeight="20.0" prefWidth="283.0" progress="0.0" />
+      <Label layoutX="488.0" layoutY="19.0" stylesheets="@mystyle.css" text="Volume:" />
+      <Button layoutX="15.0" layoutY="70.0" mnemonicParsing="false" onAction="#OnTestFileOpenButtonPressed" text="Select  Test File" />
+      <Label fx:id="audiofile_label" layoutX="145.0" layoutY="15.0" text="" />
+      <Label fx:id="notefile_label" layoutX="145.0" layoutY="46.0" text="" />
+      <Label fx:id="testfile_label" layoutX="145.0" layoutY="75.0" text="" />
+   </children>
+</AnchorPane>
